@@ -3,7 +3,7 @@ LDFLAGS ?= -lncurses
 
 all: spell
 
-spell: spell.c
+spell: game.c spell.c
 	$(CC) $(CFLAGS) $+ $(LDFLAGS) -o $@
 
 clean:

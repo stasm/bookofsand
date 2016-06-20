@@ -4,68 +4,7 @@
 #include <ncurses.h>
 #include "game.h"
 
-static GameState game;
-
-static void rand_place()
-{
-    do {
-        int x = rand() % SIZEX;
-        int y = rand() % SIZEY;
-
-        if (game.map.tiles[y][x] == TILE_EMPTY) {
-            game.player.pos.x = x;
-            game.player.pos.y = y;
-            return;
-        }
-    } while(1);
-}
-
-static void dig_room(int x, int y)
-{
-    int i, j;
-    int c = game.map.tiles[y][x];
-
-    if (x > 0 && x < SIZEX -1 && y > 0 && y < SIZEY - 1 && c == TILE_WALL) {
-        game.map.tiles[y][x] = TILE_EMPTY;
-
-        for (i = 0; i < 3; i++) {
-            for (j = 0; j < 3; j++) {
-                if (rand() % 9 < 2)
-                    dig_room(x + i - 1, y + j - 1);
-            }
-        }
-    }
-}
-
-static void init_map(void)
-{
-    int x, y;
-    int target_empty = SIZEX * SIZEY / 3;
-    int current_empty;
-
-    for (y = 0; y < SIZEY; y++) {
-        for (x = 0; x < SIZEX; x++) {
-            game.map.tiles[y][x] = TILE_WALL;
-        }
-    }
-
-    do {
-        dig_room(rand() % SIZEX, rand() % SIZEY);
-
-        current_empty = 0;
-        for (y = 0; y < SIZEY; y++) {
-            for (x = 0; x < SIZEX; x++) {
-                if (game.map.tiles[y][x] == TILE_EMPTY)
-                    current_empty++;
-            }
-        }
-    } while (current_empty < target_empty);
-
-    game.player.hp = 5;
-    rand_place();
-}
-
-static void draw_screen(void)
+static void draw_screen(GameState *game)
 {
     int x, y, dx, dy;
 
@@ -73,10 +12,10 @@ static void draw_screen(void)
 
     for (y = 0; y < SIZEY; y++) {
         for (x = 0; x < SIZEX; x++) {
-            dx = game.player.pos.x - x;
-            dy = game.player.pos.y - y;
+            dx = game->player.pos.x - x;
+            dy = game->player.pos.y - y;
             if (dx * dx + dy * dy < 25 )
-                switch (game.map.tiles[y][x]) {
+                switch (game->map.tiles[y][x]) {
                     case TILE_WALL:
                         mvaddch(y, x, '#');
                         break;
@@ -90,7 +29,7 @@ static void draw_screen(void)
         }
     }
 
-    mvaddch(game.player.pos.y, game.player.pos.x, '@');
+    mvaddch(game->player.pos.y, game->player.pos.x, '@');
 
     refresh();
 }
@@ -98,8 +37,10 @@ static void draw_screen(void)
 int main(void)
 {
     int c;
+    GameState game;
+
     srand(time(0));
-    init_map();
+    game_init(&game);
 
     initscr();
     cbreak();
@@ -109,7 +50,7 @@ int main(void)
     while (1) {
         Position npos = game.player.pos;
 
-        draw_screen();
+        draw_screen(&game);
         c = 0;
 
         while (!(c=getch()));
@@ -120,7 +61,6 @@ int main(void)
         if ((c == 'j') || (c == 'b') || (c == 'n')) npos.y++;
 
         if (game.map.tiles[npos.y][npos.x] == TILE_EMPTY) {
-
             game.player.pos = npos;
         }
     }

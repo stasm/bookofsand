@@ -3,6 +3,7 @@
 #include <time.h>
 #include <ncurses.h>
 #include "game.h"
+#include "input.h"
 
 static void draw_screen(GameState *game)
 {
@@ -36,8 +37,8 @@ static void draw_screen(GameState *game)
 
 int main(void)
 {
-    int c;
     GameState game;
+    InputState input;
 
     srand(time(0));
     game_init(&game);
@@ -47,23 +48,53 @@ int main(void)
     noecho();
     curs_set(FALSE);
 
-    while (1) {
+    do {
+        draw_screen(&game);
+        input_get(&input);
+
         Position npos = game.player.pos;
 
-        draw_screen(&game);
-        c = 0;
+        switch (input.dir) {
+            case DIRECTION_NW:
+            case DIRECTION_N:
+            case DIRECTION_NE:
+                npos.y--;
+            default:
+                break;
+        }
 
-        while (!(c=getch()));
+        switch (input.dir) {
+            case DIRECTION_NE:
+            case DIRECTION_E:
+            case DIRECTION_SE:
+                npos.x++;
+            default:
+                break;
+        }
 
-        if ((c == 'h') || (c == 'b') || (c == 'y')) npos.x--;
-        if ((c == 'l') || (c == 'n') || (c == 'u')) npos.x++;
-        if ((c == 'k') || (c == 'y') || (c == 'u')) npos.y--;
-        if ((c == 'j') || (c == 'b') || (c == 'n')) npos.y++;
+        switch (input.dir) {
+            case DIRECTION_SW:
+            case DIRECTION_S:
+            case DIRECTION_SE:
+                npos.y++;
+            default:
+                break;
+        }
+
+        switch (input.dir) {
+            case DIRECTION_NW:
+            case DIRECTION_W:
+            case DIRECTION_SW:
+                npos.x--;
+            default:
+                break;
+        }
 
         if (game.map.tiles[npos.y][npos.x] == TILE_EMPTY) {
             game.player.pos = npos;
         }
-    }
+
+    } while (!input.quit);
 
     endwin();
     return(0);

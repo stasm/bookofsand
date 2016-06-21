@@ -19,9 +19,7 @@ typedef enum {
     TILE_EMPTY
 } Tile;
 
-typedef struct {
-    Tile tiles[SIZEY][SIZEX];
-} Map;
+typedef Tile Map[SIZEY][SIZEX];
 
 typedef struct {
     Position pos;

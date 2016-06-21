@@ -45,7 +45,7 @@ void render(GameState *game)
     for (y = 0; y < SIZEY; y++) {
         for (x = 0; x < SIZEX; x++) {
             if (is_visible(game->player.pos, x, y))
-                mvaddch(y, x, char_for_tile(game->map.tiles[y][x]));
+                mvaddch(y, x, char_for_tile(game->map[y][x]));
         }
     }
 

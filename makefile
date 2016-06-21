@@ -1,5 +1,5 @@
 # Compiler
-CFLAGS  ?= -std=c99
+CFLAGS  ?= -std=c99 -Wall -Wextra -Wpedantic
 LDFLAGS ?= -lncurses
 
 # Folders

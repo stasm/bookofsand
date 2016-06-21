@@ -1,14 +1,14 @@
-        Spell
+        Spellbound
 
-Spell is a simple roguelike game.  The player's goal is to capture individual 
-letters and create words out of them.
+Spellbound is a simple roguelike game.  The player's goal is to capture 
+individual letters and create words out of them.
 
-Spell is a learning project for me to get more familiar with C.
+Spellbound is a learning project for me to get more familiar with C.
 
 
         Build
 
-Just run `make` and run `./spell` in the working directory.
+Just `make` and run `./spellbound` in the working directory.
 
 
         Influences

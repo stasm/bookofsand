@@ -7,7 +7,7 @@ OBJ_DIR = obj
 SRC_DIR = src
 
 # File lists
-DISTRIB = spell
+DISTRIB = spellbound
 SOURCES = $(wildcard $(SRC_DIR)/*.c)
 OBJECTS = $(SOURCES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 

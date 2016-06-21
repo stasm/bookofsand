@@ -24,6 +24,7 @@ typedef Tile Map[SIZEY][SIZEX];
 typedef struct {
     char     val;
     Position pos;
+    bool     captured;
 } Letter;
 
 typedef struct {

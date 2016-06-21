@@ -49,11 +49,12 @@ void render(GameState *game)
     }
 
     for (size_t i = 0; i < game->num_letters; i++) {
-        mvaddch(
-                game->letters[i].pos.y,
-                game->letters[i].pos.x,
-                game->letters[i].val
-               );
+        if (!game->letters[i].captured)
+            mvaddch(
+                    game->letters[i].pos.y,
+                    game->letters[i].pos.x,
+                    game->letters[i].val
+                   );
     }
 
     mvaddch(game->player.pos.y, game->player.pos.x, '@');

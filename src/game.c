@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include "game.h"
 #include "input.h"
@@ -32,13 +33,30 @@ static void dig_room(GameState *game, int x, int y)
     }
 }
 
-void game_process(GameState *game, InputState *input)
+bool equals(Position a, Position b)
 {
-    input_get(input);
+    return a.x == b.x && a.y == b.y;
+}
 
+Letter *get_letter(GameState *game, Position pos)
+{
+    for (size_t i = 0; i < game->num_letters; i++)
+        if (equals(game->letters[i].pos, pos))
+            return &game->letters[i];
+
+    return NULL;
+}
+
+void capture_letter(GameState *game, Letter *letter)
+{
+    letter->captured = true;
+}
+
+void move_player(GameState *game, Direction dir)
+{
     Position new_pos = game->player.pos;
 
-    switch (input->dir) {
+    switch (dir) {
         case DIRECTION_NW:
         case DIRECTION_N:
         case DIRECTION_NE:
@@ -47,7 +65,7 @@ void game_process(GameState *game, InputState *input)
             break;
     }
 
-    switch (input->dir) {
+    switch (dir) {
         case DIRECTION_NE:
         case DIRECTION_E:
         case DIRECTION_SE:
@@ -56,7 +74,7 @@ void game_process(GameState *game, InputState *input)
             break;
     }
 
-    switch (input->dir) {
+    switch (dir) {
         case DIRECTION_SW:
         case DIRECTION_S:
         case DIRECTION_SE:
@@ -65,7 +83,7 @@ void game_process(GameState *game, InputState *input)
             break;
     }
 
-    switch (input->dir) {
+    switch (dir) {
         case DIRECTION_NW:
         case DIRECTION_W:
         case DIRECTION_SW:
@@ -74,9 +92,21 @@ void game_process(GameState *game, InputState *input)
             break;
     }
 
+    Letter *letter = get_letter(game, new_pos);
+
+    if (letter != NULL) {
+        capture_letter(game, letter);
+    }
+
     if (game->map[new_pos.y][new_pos.x] == TILE_EMPTY) {
         game->player.pos = new_pos;
     }
+}
+
+void game_process(GameState *game, InputState *input)
+{
+    input_get(input);
+    move_player(game, input->dir);
 }
 
 
@@ -114,7 +144,7 @@ void game_init(GameState *game, char *magic_word)
     if (game->letters != NULL) {
         for (size_t i = 0; i < game->num_letters; i++)
             game->letters[i] = (Letter) {
-                game->magic_word[i], rand_pos(game)
+                game->magic_word[i], rand_pos(game), false
             };
     }
 }

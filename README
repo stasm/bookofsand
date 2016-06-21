@@ -17,12 +17,14 @@ The idea for the game is inspired by Jeff Lait's Letter Hunt [1].  I also
 learned a lot by reading the code of flend's ZigClimb [2] and Jakub 
 Wasilewski's A Journey To Hell [3] and Another Visit In Hell [4].  Steven 
 Feurst's 512-byte roguelike [5] and the accompanying article [6] were extremely 
-helpful in understanding the structure of small roguelikes.
+helpful in understanding the structure of small roguelikes.  Last but not 
+least, Craig Stickel's Beginner's Guide to Roguelikes in C/C++ [7] and 
+golergka's c-roguelike [8] helped me structure the code better.
 
 
         License
 
-ISC, see the LICENSE file.
+ISC; see the LICENSE file.
 
 
         References
@@ -33,3 +35,5 @@ ISC, see the LICENSE file.
 [4]: http://wasyl.eu/games/another-visit-in-hell.html
 [5]: https://groups.google.com/forum/#!topic/rec.games.roguelike.development/9j1-X9EwvfA
 [6]: http://www.locklessinc.com/articles/512byte_roguelike/
+[7]: http://www.kathekonta.com/rlguide/
+[8]: https://github.com/golergka/c-roguelike

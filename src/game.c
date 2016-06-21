@@ -2,17 +2,15 @@
 #include "game.h"
 #include "input.h"
 
-static void rand_place(GameState *game)
+static Position rand_pos(GameState *game)
 {
     do {
         int x = rand() % SIZEX;
         int y = rand() % SIZEY;
 
-        if (game->map.tiles[y][x] == TILE_EMPTY) {
-            game->player.pos.x = x;
-            game->player.pos.y = y;
-            return;
-        }
+        if (game->map.tiles[y][x] == TILE_EMPTY)
+            return (Position) { .x = x, .y = y };
+
     } while(1);
 }
 
@@ -106,5 +104,5 @@ void game_init(GameState *game)
     } while (current_empty < target_empty);
 
     game->player.hp = 5;
-    rand_place(game);
+    game->player.pos = rand_pos(game);
 }

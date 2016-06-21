@@ -1,9 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include "game.h"
 #include "input.h"
 #include "render.h"
+
+/* djb2 algorithm: http://www.cse.yorku.ca/~oz/hash.html */
+static unsigned int hash(char *str)
+{
+	unsigned int hash = 5381;
+	int c;
+
+	while ((c = *str++))
+		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+
+	return hash;
+}
+
 
 int main(int argc, char **argv)
 {
@@ -15,7 +27,7 @@ int main(int argc, char **argv)
     GameState game;
     InputState input;
 
-    srand(time(0));
+    srand(hash(argv[1]));
 
     game_init(&game, argv[1]);
     render_init();

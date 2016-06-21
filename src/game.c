@@ -9,7 +9,7 @@ static Position rand_pos(GameState *game)
         int y = rand() % SIZEY;
 
         if (game->map[y][x] == TILE_EMPTY)
-            return (Position) { .x = x, .y = y };
+            return (Position) { x, y };
 
     } while(1);
 }
@@ -105,4 +105,13 @@ void game_init(GameState *game)
 
     game->player.hp = 5;
     game->player.pos = rand_pos(game);
+
+    game->num_letters = 5;
+    game->letters = (Letter *) malloc(game->num_letters * sizeof(Letter));
+
+    if (game->letters != NULL) {
+        for (int i = 0; i < game->num_letters; i++) {
+            game->letters[i] = (Letter) { 'a', rand_pos(game) };
+        }
+    }
 }

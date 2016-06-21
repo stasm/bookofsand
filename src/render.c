@@ -38,15 +38,21 @@ static bool is_visible(Position pos, int x, int y)
 
 void render(GameState *game)
 {
-    int x, y;
-
     clear();
 
-    for (y = 0; y < SIZEY; y++) {
-        for (x = 0; x < SIZEX; x++) {
+    for (int y = 0; y < SIZEY; y++) {
+        for (int x = 0; x < SIZEX; x++) {
             if (is_visible(game->player.pos, x, y))
                 mvaddch(y, x, char_for_tile(game->map[y][x]));
         }
+    }
+
+    for (int i = 0; i < game->num_letters; i++) {
+        mvaddch(
+                game->letters[i].pos.y,
+                game->letters[i].pos.x,
+                game->letters[i].val
+               );
     }
 
     mvaddch(game->player.pos.y, game->player.pos.x, '@');

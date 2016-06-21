@@ -22,8 +22,8 @@ typedef enum {
 typedef Tile Map[SIZEY][SIZEX];
 
 typedef struct {
+    char     val;
     Position pos;
-    int      hp;
 } Letter;
 
 typedef struct {
@@ -32,9 +32,10 @@ typedef struct {
 } Player;
 
 typedef struct {
-    Player player;
-    Letter letters[10];
-    Map    map;
+    Player  player;
+    int     num_letters;
+    Letter *letters;
+    Map     map;
 } GameState;
 
 void game_process(GameState *, InputState *);

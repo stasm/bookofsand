@@ -4,36 +4,7 @@
 #include <ncurses.h>
 #include "game.h"
 #include "input.h"
-
-static void draw_screen(GameState *game)
-{
-    int x, y, dx, dy;
-
-    clear();
-
-    for (y = 0; y < SIZEY; y++) {
-        for (x = 0; x < SIZEX; x++) {
-            dx = game->player.pos.x - x;
-            dy = game->player.pos.y - y;
-            if (dx * dx + dy * dy < 25 )
-                switch (game->map.tiles[y][x]) {
-                    case TILE_WALL:
-                        mvaddch(y, x, '#');
-                        break;
-                    case TILE_EMPTY:
-                        mvaddch(y, x, '.');
-                        break;
-                    case TILE_UNKNOWN:
-                    default:
-                        mvaddch(y, x, '?');
-                }
-        }
-    }
-
-    mvaddch(game->player.pos.y, game->player.pos.x, '@');
-
-    refresh();
-}
+#include "render.h"
 
 int main(void)
 {
@@ -41,18 +12,14 @@ int main(void)
     InputState input;
 
     srand(time(0));
-    game_init(&game);
 
-    initscr();
-    cbreak();
-    noecho();
-    curs_set(FALSE);
+    game_init(&game);
+    render_init();
 
     do {
-        draw_screen(&game);
+        render(&game);
         game_process(&game, &input);
     } while (!input.quit);
 
-    endwin();
-    return(0);
+    render_teardown();
 }

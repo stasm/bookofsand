@@ -1,4 +1,6 @@
 #include <ncurses.h>
+#include <stdbool.h>
+#include "game.h"
 #include "render.h"
 
 void render_init(void)
@@ -14,28 +16,36 @@ void render_teardown(void)
     endwin();
 }
 
+static char char_for_tile(Tile tile)
+{
+    switch (tile) {
+        case TILE_WALL:
+            return '#';
+        case TILE_EMPTY:
+            return '.';
+        case TILE_UNKNOWN:
+        default:
+            return '?';
+    }
+}
+
+static bool is_visible(Position pos, int x, int y)
+{
+    int dx = pos.x - x;
+    int dy = pos.y - y;
+    return dx * dx + dy * dy < 25;
+}
+
 void render(GameState *game)
 {
-    int x, y, dx, dy;
+    int x, y;
 
     clear();
 
     for (y = 0; y < SIZEY; y++) {
         for (x = 0; x < SIZEX; x++) {
-            dx = game->player.pos.x - x;
-            dy = game->player.pos.y - y;
-            if (dx * dx + dy * dy < 25 )
-                switch (game->map.tiles[y][x]) {
-                    case TILE_WALL:
-                        mvaddch(y, x, '#');
-                        break;
-                    case TILE_EMPTY:
-                        mvaddch(y, x, '.');
-                        break;
-                    case TILE_UNKNOWN:
-                    default:
-                        mvaddch(y, x, '?');
-                }
+            if (is_visible(game->player.pos, x, y))
+                mvaddch(y, x, char_for_tile(game->map.tiles[y][x]));
         }
     }
 

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "game.h"
+#include "input.h"
 
 static void rand_place(GameState *game)
 {
@@ -32,6 +33,52 @@ static void dig_room(GameState *game, int x, int y)
     }
 }
 
+void game_process(GameState *game, InputState *input)
+{
+    input_get(input);
+
+    Position new_pos = game->player.pos;
+
+    switch (input->dir) {
+        case DIRECTION_NW:
+        case DIRECTION_N:
+        case DIRECTION_NE:
+            new_pos.y--;
+        default:
+            break;
+    }
+
+    switch (input->dir) {
+        case DIRECTION_NE:
+        case DIRECTION_E:
+        case DIRECTION_SE:
+            new_pos.x++;
+        default:
+            break;
+    }
+
+    switch (input->dir) {
+        case DIRECTION_SW:
+        case DIRECTION_S:
+        case DIRECTION_SE:
+            new_pos.y++;
+        default:
+            break;
+    }
+
+    switch (input->dir) {
+        case DIRECTION_NW:
+        case DIRECTION_W:
+        case DIRECTION_SW:
+            new_pos.x--;
+        default:
+            break;
+    }
+
+    if (game->map.tiles[new_pos.y][new_pos.x] == TILE_EMPTY) {
+        game->player.pos = new_pos;
+    }
+}
 
 
 void game_init(GameState *game)

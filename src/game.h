@@ -1,6 +1,8 @@
 #ifndef __GAME_H__
 #define __GAME_H__
 
+#include "input.h"
+
 #define SIZEX 40
 #define SIZEY 20
 
@@ -36,6 +38,8 @@ typedef struct {
     Letter letters[10];
     Map    map;
 } GameState;
+
+void game_process(GameState *, InputState *);
 
 void game_init(GameState *);
 

@@ -33,13 +33,14 @@ typedef struct {
 
 typedef struct {
     Player  player;
-    int     num_letters;
+    char   *magic_word;
+    size_t  num_letters;
     Letter *letters;
     Map     map;
 } GameState;
 
 void game_process(GameState *, InputState *);
 
-void game_init(GameState *);
+void game_init(GameState *, char *);
 
 #endif

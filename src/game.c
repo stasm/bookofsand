@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "game.h"
 #include "input.h"
 
@@ -79,7 +80,7 @@ void game_process(GameState *game, InputState *input)
 }
 
 
-void game_init(GameState *game)
+void game_init(GameState *game, char *magic_word)
 {
     int x, y;
     int target_empty = SIZEX * SIZEY / 3;
@@ -106,12 +107,14 @@ void game_init(GameState *game)
     game->player.hp = 5;
     game->player.pos = rand_pos(game);
 
-    game->num_letters = 5;
+    game->magic_word = magic_word;
+    game->num_letters = strlen(magic_word);
     game->letters = (Letter *) malloc(game->num_letters * sizeof(Letter));
 
     if (game->letters != NULL) {
-        for (int i = 0; i < game->num_letters; i++) {
-            game->letters[i] = (Letter) { 'a', rand_pos(game) };
-        }
+        for (size_t i = 0; i < game->num_letters; i++)
+            game->letters[i] = (Letter) {
+                game->magic_word[i], rand_pos(game)
+            };
     }
 }

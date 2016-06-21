@@ -1,5 +1,6 @@
-#include <ncurses.h>
+#include <stdlib.h>
 #include <stdbool.h>
+#include <ncurses.h>
 #include "game.h"
 #include "render.h"
 
@@ -47,7 +48,7 @@ void render(GameState *game)
         }
     }
 
-    for (int i = 0; i < game->num_letters; i++) {
+    for (size_t i = 0; i < game->num_letters; i++) {
         mvaddch(
                 game->letters[i].pos.y,
                 game->letters[i].pos.x,

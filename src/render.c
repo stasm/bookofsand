@@ -22,6 +22,8 @@ void render_init(void)
 
     start_color();
     init_pair(1, COLOR_WHITE, COLOR_BLACK);
+
+    bkgd(COLOR_PAIR(1));
 }
 
 void render_teardown(void)

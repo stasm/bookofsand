@@ -1,15 +1,27 @@
+#define _XOPEN_SOURCE_EXTENDED
+
 #include <stdlib.h>
 #include <stdbool.h>
-#include <ncurses.h>
+#include <ncursesw/curses.h>
 #include "game.h"
 #include "render.h"
+
+#define EMPTY_BLOCK  L" "
+#define LIGHT_SHADE  L"░"
+#define MEDIUM_SHADE L"▒"
+#define DARK_SHADE   L"▓"
+#define FULL_BLOCK   L"█"
 
 void render_init(void)
 {
     initscr();
+
     cbreak();
     noecho();
     curs_set(FALSE);
+
+    start_color();
+    init_pair(1, COLOR_CYAN, COLOR_BLACK);
 }
 
 void render_teardown(void)
@@ -17,17 +29,19 @@ void render_teardown(void)
     endwin();
 }
 
-static char char_for_tile(Tile tile)
+static void char_for_tile(Tile tile, cchar_t *pic)
 {
     switch (tile) {
         case TILE_WALL:
-            return '#';
+            setcchar(pic, FULL_BLOCK, WA_NORMAL, COLOR_PAIR(1), NULL);
+            break;
         case TILE_EMPTY:
-            return ' ';
+            setcchar(pic, EMPTY_BLOCK, WA_NORMAL, COLOR_PAIR(1), NULL);
+            break;
         case TILE_FOG:
         case TILE_UNKNOWN:
         default:
-            return '-';
+            setcchar(pic, LIGHT_SHADE, WA_NORMAL, COLOR_PAIR(1), NULL);
     }
 }
 
@@ -59,8 +73,11 @@ void render(GameState *game)
     getmaxyx(stdscr, h, w);
 
     for (int y = 0; y < h; y++)
-        for (int x = 0; x < w; x++)
-            mvaddch(y, x, char_for_tile(get_tile(game, x, y)));
+        for (int x = 0; x < w; x++) {
+            cchar_t pic;
+            char_for_tile(get_tile(game, x, y), &pic);
+            mvadd_wch(y, x, &pic);
+        }
 
     for (size_t i = 0; i < game->num_letters; i++)
         if (game->letters[i].captured)
@@ -72,7 +89,9 @@ void render(GameState *game)
                     game->letters[i].val
                    );
 
+    attron(COLOR_PAIR(1));
     mvaddch(game->player.pos.y, game->player.pos.x, '@');
+    attroff(COLOR_PAIR(1));
 
     refresh();
 }

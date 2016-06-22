@@ -1,6 +1,6 @@
 # Compiler
 CFLAGS  ?= -std=c99 -Wall -Wextra -Wpedantic
-LDFLAGS ?= -lncurses
+LDFLAGS ?= -lncursesw
 
 # Folders
 OBJ_DIR = obj

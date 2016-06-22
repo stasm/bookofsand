@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <locale.h>
 #include "game.h"
 #include "input.h"
 #include "render.h"
@@ -19,6 +20,8 @@ static unsigned int hash(char *str)
 
 int main(int argc, char **argv)
 {
+    setlocale(LC_ALL, "");
+
     if (argc != 2) {
         printf("Say the magic word?\n");
         return 1;

@@ -24,12 +24,10 @@ static void dig_room(GameState *game, int x, int y)
     if (x > 0 && x < SIZEX - 1 && y > 0 && y < SIZEY - 1 && c == TILE_WALL) {
         game->map[y][x] = TILE_EMPTY;
 
-        for (i = 0; i < 3; i++) {
-            for (j = 0; j < 3; j++) {
+        for (i = 0; i < 3; i++)
+            for (j = 0; j < 3; j++)
                 if (rand() % 9 < 2)
                     dig_room(game, x + i - 1, y + j - 1);
-            }
-        }
     }
 }
 
@@ -94,13 +92,11 @@ void move_player(GameState *game, Direction dir)
 
     Letter *letter = get_letter(game, new_pos);
 
-    if (letter != NULL) {
+    if (letter != NULL)
         capture_letter(letter);
-    }
 
-    if (game->map[new_pos.y][new_pos.x] == TILE_EMPTY) {
+    if (game->map[new_pos.y][new_pos.x] == TILE_EMPTY)
         game->player.pos = new_pos;
-    }
 }
 
 void game_process(GameState *game, InputState *input)
@@ -116,11 +112,9 @@ void game_init(GameState *game, char *magic_word)
     int target_empty = SIZEX * SIZEY / 3;
     int current_empty;
 
-    for (y = 0; y < SIZEY; y++) {
-        for (x = 0; x < SIZEX; x++) {
+    for (y = 0; y < SIZEY; y++)
+        for (x = 0; x < SIZEX; x++)
             game->map[y][x] = TILE_WALL;
-        }
-    }
 
     do {
         dig_room(game, rand() % SIZEX, rand() % SIZEY);
@@ -141,10 +135,9 @@ void game_init(GameState *game, char *magic_word)
     game->num_letters = strlen(magic_word);
     game->letters = (Letter *) malloc(game->num_letters * sizeof(Letter));
 
-    if (game->letters != NULL) {
+    if (game->letters != NULL)
         for (size_t i = 0; i < game->num_letters; i++)
             game->letters[i] = (Letter) {
                 game->magic_word[i], rand_pos(game), false
             };
-    }
 }

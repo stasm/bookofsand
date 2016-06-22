@@ -113,8 +113,10 @@ void game_init(GameState *game, char *magic_word)
     int current_empty;
 
     for (y = 0; y < SIZEY; y++)
-        for (x = 0; x < SIZEX; x++)
+        for (x = 0; x < SIZEX; x++) {
             game->map[y][x] = TILE_WALL;
+            game->seen[y][x] = false;
+        }
 
     do {
         dig_room(game, rand() % SIZEX, rand() % SIZEY);

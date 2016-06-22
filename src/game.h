@@ -2,6 +2,7 @@
 #define __GAME_H__
 
 #include <stdlib.h>
+#include <stdbool.h>
 #include "input.h"
 
 #define SIZEX 80
@@ -16,12 +17,14 @@ typedef struct {
 
 typedef enum {
     TILE_UNKNOWN = 0,
-    TILE_FOG,
     TILE_WALL,
-    TILE_EMPTY
+    TILE_WALL_FOG,
+    TILE_EMPTY,
+    TILE_EMPTY_FOG
 } Tile;
 
 typedef Tile Map[SIZEY][SIZEX];
+typedef bool Seen[SIZEY][SIZEX];
 
 typedef struct {
     char     val;
@@ -40,6 +43,7 @@ typedef struct {
     size_t  num_letters;
     Letter *letters;
     Map     map;
+    Seen    seen;
 } GameState;
 
 void game_process(GameState *, InputState *);

@@ -21,7 +21,7 @@ void render_init(void)
     curs_set(FALSE);
 
     start_color();
-    init_pair(1, COLOR_CYAN, COLOR_BLACK);
+    init_pair(1, COLOR_WHITE, COLOR_BLACK);
 }
 
 void render_teardown(void)
@@ -35,13 +35,18 @@ static void char_for_tile(Tile tile, cchar_t *pic)
         case TILE_WALL:
             setcchar(pic, FULL_BLOCK, WA_NORMAL, COLOR_PAIR(1), NULL);
             break;
-        case TILE_EMPTY:
-            setcchar(pic, EMPTY_BLOCK, WA_NORMAL, COLOR_PAIR(1), NULL);
+        case TILE_WALL_FOG:
+            setcchar(pic, DARK_SHADE, WA_NORMAL, COLOR_PAIR(1), NULL);
             break;
-        case TILE_FOG:
+        case TILE_EMPTY:
+            setcchar(pic, MEDIUM_SHADE, WA_NORMAL, COLOR_PAIR(1), NULL);
+            break;
+        case TILE_EMPTY_FOG:
+            setcchar(pic, LIGHT_SHADE, WA_NORMAL, COLOR_PAIR(1), NULL);
+            break;
         case TILE_UNKNOWN:
         default:
-            setcchar(pic, LIGHT_SHADE, WA_NORMAL, COLOR_PAIR(1), NULL);
+            setcchar(pic, EMPTY_BLOCK, WA_NORMAL, COLOR_PAIR(1), NULL);
     }
 }
 
@@ -53,15 +58,31 @@ static bool is_visible(Position pos, int x, int y)
     return dx * dx + dy * dy < r * r;
 }
 
+static bool in_bounds(int x, int y) {
+    return x >= 0 && x < SIZEX && y >= 0 && y < SIZEY;
+}
+
 static Tile get_tile(GameState *game, int x, int y)
 {
-     if (is_visible(game->player.pos, x, y))
-         if (x >= 0 && x < SIZEX && y >= 0 && y < SIZEY)
+     if (is_visible(game->player.pos, x, y)) {
+         if (in_bounds(x, y)) {
+             game->seen[y][x] = true;
              return game->map[y][x];
-         else
+         } else {
              return TILE_UNKNOWN;
-     else
-         return TILE_FOG;
+         }
+     } else if (in_bounds(x, y) && game->seen[y][x]) {
+         switch (game->map[y][x]) {
+             case TILE_WALL:
+                 return TILE_WALL_FOG;
+             case TILE_EMPTY:
+                 return TILE_EMPTY_FOG;
+             default:
+                 return TILE_UNKNOWN;
+         }
+     } else {
+         return TILE_UNKNOWN;
+     }
 }
 
 void render(GameState *game)
@@ -89,9 +110,7 @@ void render(GameState *game)
                     game->letters[i].val
                    );
 
-    attron(COLOR_PAIR(1));
     mvaddch(game->player.pos.y, game->player.pos.x, '@');
-    attroff(COLOR_PAIR(1));
 
     refresh();
 }

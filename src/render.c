@@ -20,12 +20,14 @@ void render_teardown(void)
 static char char_for_tile(Tile tile)
 {
     switch (tile) {
-        case TILE_EMPTY:
-            return '.';
         case TILE_WALL:
+            return '#';
+        case TILE_EMPTY:
+            return ' ';
+        case TILE_FOG:
         case TILE_UNKNOWN:
         default:
-            return '#';
+            return '-';
     }
 }
 
@@ -35,6 +37,17 @@ static bool is_visible(Position pos, int x, int y)
     int dx = pos.x - x;
     int dy = pos.y - y;
     return dx * dx + dy * dy < r * r;
+}
+
+static Tile get_tile(GameState *game, int x, int y)
+{
+     if (is_visible(game->player.pos, x, y))
+         if (x >= 0 && x < SIZEX && y >= 0 && y < SIZEY)
+             return game->map[y][x];
+         else
+             return TILE_UNKNOWN;
+     else
+         return TILE_FOG;
 }
 
 void render(GameState *game)
@@ -47,8 +60,7 @@ void render(GameState *game)
 
     for (int y = 0; y < h; y++)
         for (int x = 0; x < w; x++)
-            if (is_visible(game->player.pos, x, y))
-                mvaddch(y, x, char_for_tile(game->map[y][x]));
+            mvaddch(y, x, char_for_tile(get_tile(game, x, y)));
 
     for (size_t i = 0; i < game->num_letters; i++)
         if (game->letters[i].captured)

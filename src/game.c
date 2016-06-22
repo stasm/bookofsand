@@ -21,7 +21,7 @@ static void dig_room(GameState *game, int x, int y)
     int i, j;
     int c = game->map[y][x];
 
-    if (x > 0 && x < SIZEX -1 && y > 0 && y < SIZEY - 1 && c == TILE_WALL) {
+    if (x > 0 && x < SIZEX - 1 && y > 0 && y < SIZEY - 1 && c == TILE_WALL) {
         game->map[y][x] = TILE_EMPTY;
 
         for (i = 0; i < 3; i++) {

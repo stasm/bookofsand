@@ -16,6 +16,7 @@ typedef struct {
 
 typedef enum {
     TILE_UNKNOWN = 0,
+    TILE_FOG,
     TILE_WALL,
     TILE_EMPTY
 } Tile;

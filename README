@@ -1,14 +1,15 @@
-        Spellbound
+        Say The Magic Word
 
-Spellbound is a simple roguelike game.  The player's goal is to capture 
+Say The Magic Word is a simple roguelike game.  The player's goal is to capture 
 individual letters and create words out of them.
 
-Spellbound is a learning project for me to get more familiar with C.
+Say The Magic Word is a learning project for me to get more familiar with C.
 
 
         Build
 
-Just `make` and run `./spellbound` in the working directory.
+Just `make` and run `./say hello` in the working directory.  Replace `hello` 
+with any other word to seed the world and the letters to collect.
 
 
         Influences

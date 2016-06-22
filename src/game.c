@@ -47,7 +47,7 @@ Letter *get_letter(GameState *game, Position pos)
     return NULL;
 }
 
-void capture_letter(GameState *game, Letter *letter)
+void capture_letter(Letter *letter)
 {
     letter->captured = true;
 }
@@ -95,7 +95,7 @@ void move_player(GameState *game, Direction dir)
     Letter *letter = get_letter(game, new_pos);
 
     if (letter != NULL) {
-        capture_letter(game, letter);
+        capture_letter(letter);
     }
 
     if (game->map[new_pos.y][new_pos.x] == TILE_EMPTY) {

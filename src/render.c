@@ -32,14 +32,21 @@ static char char_for_tile(Tile tile)
 
 static bool is_visible(Position pos, int x, int y)
 {
+    int r = 5;
     int dx = pos.x - x;
     int dy = pos.y - y;
-    return dx * dx + dy * dy < 25;
+    return dx * dx + dy * dy < r * r;
 }
 
 void render(GameState *game)
 {
+    int num_captured = 0;
+
     clear();
+
+    for (size_t i = 0; i < game->num_letters; i++)
+        if (game->letters[i].captured)
+            mvaddch(SIZEY + 1, num_captured++, game->letters[i].val);
 
     for (int y = 0; y < SIZEY; y++) {
         for (int x = 0; x < SIZEX; x++) {

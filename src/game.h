@@ -1,6 +1,7 @@
 #ifndef __GAME_H__
 #define __GAME_H__
 
+#include <stdlib.h>
 #include "input.h"
 
 #define SIZEX 40

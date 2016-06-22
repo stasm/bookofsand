@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include "input.h"
 
-#define SIZEX 40
+#define SIZEX 80
 #define SIZEY 20
 
 typedef int Coordinate;

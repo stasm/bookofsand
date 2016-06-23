@@ -3,6 +3,9 @@
 
 #include "game.h"
 
+#define max(a,b) (((a) > (b)) ? (a) : (b))
+#define min(a,b) (((a) < (b)) ? (a) : (b))
+
 void render_init(void);
 
 void render_teardown(void);

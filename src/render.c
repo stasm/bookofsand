@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include <math.h>
 #include <ncursesw/curses.h>
 #include "game.h"
 #include "render.h"
@@ -37,13 +38,13 @@ static void char_for_tile(Tile tile, cchar_t *pic)
         case TILE_WALL:
             setcchar(pic, FULL_BLOCK, WA_NORMAL, COLOR_PAIR(1), NULL);
             break;
-        case TILE_WALL_FOG:
+        case TILE_WALL_DARK:
             setcchar(pic, DARK_SHADE, WA_NORMAL, COLOR_PAIR(1), NULL);
             break;
         case TILE_EMPTY:
             setcchar(pic, MEDIUM_SHADE, WA_NORMAL, COLOR_PAIR(1), NULL);
             break;
-        case TILE_EMPTY_FOG:
+        case TILE_EMPTY_DARK:
             setcchar(pic, LIGHT_SHADE, WA_NORMAL, COLOR_PAIR(1), NULL);
             break;
         case TILE_UNKNOWN:
@@ -52,11 +53,34 @@ static void char_for_tile(Tile tile, cchar_t *pic)
     }
 }
 
-static bool is_visible(Position pos, int x, int y)
+/* See http://www.redblobgames.com/grids/line-drawing.html */
+static bool is_visible(GameState *game, int x, int y)
+{
+    int dx = abs(game->player.pos.x - x);
+    int dy = abs(game->player.pos.y - y);
+    int steps = max(dx, dy);
+    int step = 0;
+
+    while (++step <= steps - 1) {
+        double t = (double) step / (double) steps;
+        int u = game->player.pos.x + t * (x - game->player.pos.x);
+        int v = game->player.pos.y + t * (y - game->player.pos.y);
+
+        game->seen[v][u] = true;
+
+        if (game->map[v][u] == TILE_WALL)
+            return false;
+    }
+
+    game->seen[y][x] = true;
+    return true;
+}
+
+static bool is_near(Position pos, int x, int y)
 {
     int r = 5;
-    int dx = pos.x - x;
-    int dy = pos.y - y;
+    int dx = abs(pos.x - x);
+    int dy = abs(pos.y - y);
     return dx * dx + dy * dy < r * r;
 }
 
@@ -64,27 +88,35 @@ static bool in_bounds(int x, int y) {
     return x >= 0 && x < SIZEX && y >= 0 && y < SIZEY;
 }
 
+static Tile get_tile_dark(Tile tile)
+{
+    switch (tile) {
+        case TILE_WALL:
+            return TILE_WALL_DARK;
+        case TILE_EMPTY:
+            return TILE_EMPTY_DARK;
+        default:
+            return tile;
+    }
+}
+
 static Tile get_tile(GameState *game, int x, int y)
 {
-     if (is_visible(game->player.pos, x, y)) {
-         if (in_bounds(x, y)) {
-             game->seen[y][x] = true;
+     if (!in_bounds(x, y))
+         return TILE_UNKNOWN;
+
+     if (is_visible(game, x, y)) {
+         if (is_near(game->player.pos, x, y)) {
              return game->map[y][x];
          } else {
-             return TILE_UNKNOWN;
+             return get_tile_dark(game->map[y][x]);
          }
-     } else if (in_bounds(x, y) && game->seen[y][x]) {
-         switch (game->map[y][x]) {
-             case TILE_WALL:
-                 return TILE_WALL_FOG;
-             case TILE_EMPTY:
-                 return TILE_EMPTY_FOG;
-             default:
-                 return TILE_UNKNOWN;
-         }
-     } else {
-         return TILE_UNKNOWN;
      }
+
+     if (game->seen[y][x])
+         return get_tile_dark(game->map[y][x]);
+
+     return TILE_UNKNOWN;
 }
 
 void render(GameState *game)

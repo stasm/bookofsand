@@ -18,9 +18,9 @@ typedef struct {
 typedef enum {
     TILE_UNKNOWN = 0,
     TILE_WALL,
-    TILE_WALL_FOG,
+    TILE_WALL_DARK,
     TILE_EMPTY,
-    TILE_EMPTY_FOG
+    TILE_EMPTY_DARK
 } Tile;
 
 typedef Tile Map[SIZEY][SIZEX];

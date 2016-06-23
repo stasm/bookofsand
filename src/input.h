@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-typedef enum {
+enum input_dir {
     DIRECTION_NONE = 0,
     DIRECTION_NW,
     DIRECTION_N,
@@ -13,13 +13,13 @@ typedef enum {
     DIRECTION_SW,
     DIRECTION_S,
     DIRECTION_SE
-} Direction;
+};
 
-typedef struct {
-    bool      quit;
-    Direction dir;
-} InputState;
+struct input_state {
+    bool            quit;
+    enum input_dir  dir;
+};
 
-void input_get(InputState *);
+void input_get(struct input_state *);
 
 #endif

@@ -27,8 +27,8 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    GameState game;
-    InputState input;
+    struct game_state game;
+    struct input_state input;
 
     srand(hash(argv[1]));
 

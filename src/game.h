@@ -8,46 +8,40 @@
 #define SIZEX 80
 #define SIZEY 20
 
-typedef int Coordinate;
+struct grid_pos {
+    int x;
+    int y;
+};
 
-typedef struct {
-    Coordinate x;
-    Coordinate y;
-} Position;
-
-typedef enum {
+enum grid_tile {
     TILE_UNKNOWN = 0,
     TILE_WALL,
     TILE_WALL_DARK,
     TILE_EMPTY,
     TILE_EMPTY_DARK
-} Tile;
+};
 
-typedef Tile Map[SIZEY][SIZEX];
-typedef bool Seen[SIZEY][SIZEX];
+struct letter {
+    char             val;
+    struct grid_pos  pos;
+    bool             captured;
+};
 
-typedef struct {
-    char     val;
-    Position pos;
-    bool     captured;
-} Letter;
+struct player {
+    struct grid_pos  pos;
+};
 
-typedef struct {
-    Position pos;
-    int      hp;
-} Player;
+struct game_state {
+    struct player    player;
+    char            *magic_word;
+    size_t           num_letters;
+    struct letter   *letters;
+    enum grid_tile   map[SIZEY][SIZEX];
+    bool             seen[SIZEY][SIZEX];
+};
 
-typedef struct {
-    Player  player;
-    char   *magic_word;
-    size_t  num_letters;
-    Letter *letters;
-    Map     map;
-    Seen    seen;
-} GameState;
+void game_process(struct game_state *, struct input_state *);
 
-void game_process(GameState *, InputState *);
-
-void game_init(GameState *, char *);
+void game_init(struct game_state *, char *);
 
 #endif

@@ -32,7 +32,7 @@ void render_teardown(void)
     endwin();
 }
 
-static void char_for_tile(Tile tile, cchar_t *pic)
+static void char_for_tile(enum grid_tile tile, cchar_t *pic)
 {
     switch (tile) {
         case TILE_WALL:
@@ -54,7 +54,7 @@ static void char_for_tile(Tile tile, cchar_t *pic)
 }
 
 /* See http://www.redblobgames.com/grids/line-drawing.html */
-static bool is_visible(GameState *game, int x, int y)
+static bool is_visible(struct game_state *game, int x, int y)
 {
     int dx = abs(game->player.pos.x - x);
     int dy = abs(game->player.pos.y - y);
@@ -76,7 +76,7 @@ static bool is_visible(GameState *game, int x, int y)
     return true;
 }
 
-static bool is_near(Position pos, int x, int y)
+static bool is_near(struct grid_pos pos, int x, int y)
 {
     int r = 5;
     int dx = abs(pos.x - x);
@@ -88,7 +88,7 @@ static bool in_bounds(int x, int y) {
     return x >= 0 && x < SIZEX && y >= 0 && y < SIZEY;
 }
 
-static Tile get_tile_dark(Tile tile)
+static enum grid_tile get_tile_dark(enum grid_tile tile)
 {
     switch (tile) {
         case TILE_WALL:
@@ -100,7 +100,7 @@ static Tile get_tile_dark(Tile tile)
     }
 }
 
-static Tile get_tile(GameState *game, int x, int y)
+static enum grid_tile get_tile(struct game_state *game, int x, int y)
 {
      if (!in_bounds(x, y))
          return TILE_UNKNOWN;
@@ -119,7 +119,7 @@ static Tile get_tile(GameState *game, int x, int y)
      return TILE_UNKNOWN;
 }
 
-void render(GameState *game)
+void render(struct game_state *game)
 {
     int h, w;
     int num_captured = 0;

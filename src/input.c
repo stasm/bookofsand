@@ -1,13 +1,13 @@
 #include <ncurses.h>
 #include "input.h"
 
-void input_clear(InputState *input)
+void input_clear(struct input_state *input)
 {
     input->quit = false;
     input->dir  = DIRECTION_NONE;
 }
 
-void input_get(InputState *input)
+void input_get(struct input_state *input)
 {
     int c = 0;
     input_clear(input);

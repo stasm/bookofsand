@@ -4,19 +4,19 @@
 #include "game.h"
 #include "input.h"
 
-static Position rand_pos(GameState *game)
+static struct grid_pos rand_pos(struct game_state *game)
 {
     do {
         int x = rand() % SIZEX;
         int y = rand() % SIZEY;
 
         if (game->map[y][x] == TILE_EMPTY)
-            return (Position) { x, y };
+            return (struct grid_pos) { x, y };
 
     } while(1);
 }
 
-static void dig_room(GameState *game, int x, int y)
+static void dig_room(struct game_state *game, int x, int y)
 {
     int i, j;
     int c = game->map[y][x];
@@ -31,12 +31,12 @@ static void dig_room(GameState *game, int x, int y)
     }
 }
 
-bool equals(Position a, Position b)
+bool equals(struct grid_pos a, struct grid_pos b)
 {
     return a.x == b.x && a.y == b.y;
 }
 
-Letter *get_letter(GameState *game, Position pos)
+struct letter *get_letter(struct game_state *game, struct grid_pos pos)
 {
     for (size_t i = 0; i < game->num_letters; i++)
         if (equals(game->letters[i].pos, pos))
@@ -45,14 +45,14 @@ Letter *get_letter(GameState *game, Position pos)
     return NULL;
 }
 
-void capture_letter(Letter *letter)
+void capture_letter(struct letter *letter)
 {
     letter->captured = true;
 }
 
-void move_player(GameState *game, Direction dir)
+void move_player(struct game_state *game, enum input_dir dir)
 {
-    Position new_pos = game->player.pos;
+    struct grid_pos new_pos = game->player.pos;
 
     switch (dir) {
         case DIRECTION_NW:
@@ -90,7 +90,7 @@ void move_player(GameState *game, Direction dir)
             break;
     }
 
-    Letter *letter = get_letter(game, new_pos);
+    struct letter *letter = get_letter(game, new_pos);
 
     if (letter != NULL)
         capture_letter(letter);
@@ -99,14 +99,14 @@ void move_player(GameState *game, Direction dir)
         game->player.pos = new_pos;
 }
 
-void game_process(GameState *game, InputState *input)
+void game_process(struct game_state *game, struct input_state *input)
 {
     input_get(input);
     move_player(game, input->dir);
 }
 
 
-void game_init(GameState *game, char *magic_word)
+void game_init(struct game_state *game, char *magic_word)
 {
     int x, y;
     int target_empty = SIZEX * SIZEY / 3;
@@ -130,16 +130,16 @@ void game_init(GameState *game, char *magic_word)
         }
     } while (current_empty < target_empty);
 
-    game->player.hp = 5;
     game->player.pos = rand_pos(game);
 
     game->magic_word = magic_word;
     game->num_letters = strlen(magic_word);
-    game->letters = (Letter *) malloc(game->num_letters * sizeof(Letter));
+    game->letters =
+        (struct letter *) malloc(game->num_letters * sizeof(struct letter));
 
     if (game->letters != NULL)
         for (size_t i = 0; i < game->num_letters; i++)
-            game->letters[i] = (Letter) {
+            game->letters[i] = (struct letter ) {
                 game->magic_word[i], rand_pos(game), false
             };
 }

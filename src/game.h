@@ -3,23 +3,10 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include "dungeon.h"
 #include "input.h"
 
-#define SIZEX 80
-#define SIZEY 20
-
-struct grid_pos {
-    int x;
-    int y;
-};
-
-enum grid_tile {
-    TILE_UNKNOWN = 0,
-    TILE_WALL,
-    TILE_WALL_DARK,
-    TILE_EMPTY,
-    TILE_EMPTY_DARK
-};
+struct grid_pos;
 
 struct letter {
     char             val;

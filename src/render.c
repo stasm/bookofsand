@@ -3,7 +3,13 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <math.h>
+
+#ifdef __APPLE__
+#include <ncurses.h>
+#else
 #include <ncursesw/curses.h>
+#endif
+
 #include "game.h"
 #include "render.h"
 

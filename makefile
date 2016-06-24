@@ -1,6 +1,11 @@
 # Compiler
 CFLAGS  ?= -std=c99 -Wall -Wextra -Wpedantic
-LDFLAGS ?= -lm -lncursesw
+
+ifeq ($(shell uname -s),Darwin)
+	LDFLAGS ?= -lm -lncurses
+else
+	LDFLAGS ?= -lm -lncursesw
+endif
 
 # Folders
 OBJ_DIR = obj

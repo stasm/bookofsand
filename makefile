@@ -18,6 +18,9 @@ OBJECTS = $(SOURCES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 all: $(DISTRIB)
 
+debug: CFLAGS += -g
+debug: $(DISTRIB)
+
 $(DISTRIB): $(OBJECTS)
 	@echo "Linking executable" $(OBJECTS)
 	@mkdir -p $(@D)

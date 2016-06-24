@@ -13,11 +13,20 @@
 #include "game.h"
 #include "render.h"
 
-#define EMPTY_BLOCK  L" "
-#define LIGHT_SHADE  L"░"
-#define MEDIUM_SHADE L"▒"
-#define DARK_SHADE   L"▓"
-#define FULL_BLOCK   L"█"
+#define ALPHA_0   L" "
+#define ALPHA_25  L"░"
+#define ALPHA_50  L"▒"
+#define ALPHA_75  L"▓"
+#define ALPHA_100 L"█"
+
+enum term_color {
+    TERM_COLOR_BLACK       = 16,
+    TERM_COLOR_BROWN       = 52,
+    TERM_COLOR_BEIGE       = 228,
+    TERM_COLOR_WHITE       = 231,
+    TERM_COLOR_DARK_GRAY   = 235,
+    TERM_COLOR_MEDIUM_GRAY = 241,
+};
 
 void render_init(void)
 {
@@ -28,7 +37,9 @@ void render_init(void)
     curs_set(FALSE);
 
     start_color();
-    init_pair(1, COLOR_WHITE, COLOR_BLACK);
+    init_pair(1, TERM_COLOR_WHITE, TERM_COLOR_BLACK);
+    init_pair(2, TERM_COLOR_BROWN, TERM_COLOR_BEIGE);
+    init_pair(3, TERM_COLOR_MEDIUM_GRAY, TERM_COLOR_DARK_GRAY);
 
     bkgd(COLOR_PAIR(1));
 }
@@ -42,20 +53,20 @@ static void char_for_tile(enum grid_tile tile, cchar_t *pic)
 {
     switch (tile) {
         case TILE_WALL:
-            setcchar(pic, FULL_BLOCK, WA_NORMAL, COLOR_PAIR(1), NULL);
+            setcchar(pic, ALPHA_75, WA_NORMAL, 2, NULL);
             break;
         case TILE_WALL_DARK:
-            setcchar(pic, DARK_SHADE, WA_NORMAL, COLOR_PAIR(1), NULL);
+            setcchar(pic, ALPHA_100, WA_NORMAL, 2, NULL);
             break;
         case TILE_EMPTY:
-            setcchar(pic, MEDIUM_SHADE, WA_NORMAL, COLOR_PAIR(1), NULL);
+            setcchar(pic, ALPHA_25, WA_NORMAL, 3, NULL);
             break;
         case TILE_EMPTY_DARK:
-            setcchar(pic, LIGHT_SHADE, WA_NORMAL, COLOR_PAIR(1), NULL);
+            setcchar(pic, ALPHA_0, WA_NORMAL, 3, NULL);
             break;
         case TILE_UNKNOWN:
         default:
-            setcchar(pic, EMPTY_BLOCK, WA_NORMAL, COLOR_PAIR(1), NULL);
+            setcchar(pic, ALPHA_0, WA_NORMAL, 1, NULL);
     }
 }
 
@@ -142,7 +153,7 @@ void render(struct game_state *game)
 
     for (size_t i = 0; i < game->num_letters; i++)
         if (game->letters[i].captured)
-            mvaddch(SIZEY + 1, num_captured++, game->letters[i].val);
+            mvaddch(SIZEY, num_captured++, game->letters[i].val);
         else
             mvaddch(
                     game->letters[i].pos.y,

@@ -20,12 +20,15 @@
 #define ALPHA_100 L"█"
 
 enum term_color {
-    TERM_COLOR_BLACK       = 16,
-    TERM_COLOR_BROWN       = 52,
-    TERM_COLOR_BEIGE       = 228,
-    TERM_COLOR_WHITE       = 231,
-    TERM_COLOR_DARK_GRAY   = 235,
-    TERM_COLOR_MEDIUM_GRAY = 241,
+    TERM_COLOR_BLACK         = 16,
+    TERM_COLOR_BROWN         = 52,
+    TERM_COLOR_ROTTEN_GREEN  = 59,
+    TERM_COLOR_LIGHT_PINK    = 174,
+    TERM_COLOR_LIGHT_ORANGE  = 180,
+    TERM_COLOR_BEIGE         = 228,
+    TERM_COLOR_WHITE         = 231,
+    TERM_COLOR_DARK_GRAY     = 235,
+    TERM_COLOR_MEDIUM_GRAY   = 241,
 };
 
 void render_init(void)
@@ -38,8 +41,10 @@ void render_init(void)
 
     start_color();
     init_pair(1, TERM_COLOR_WHITE, TERM_COLOR_BLACK);
-    init_pair(2, TERM_COLOR_BROWN, TERM_COLOR_BEIGE);
-    init_pair(3, TERM_COLOR_MEDIUM_GRAY, TERM_COLOR_DARK_GRAY);
+    init_pair(2, TERM_COLOR_MEDIUM_GRAY, TERM_COLOR_DARK_GRAY);  /* Floor */
+    init_pair(3, TERM_COLOR_BROWN, TERM_COLOR_BEIGE);
+    init_pair(4, TERM_COLOR_WHITE, TERM_COLOR_LIGHT_ORANGE);
+    init_pair(5, TERM_COLOR_LIGHT_PINK, TERM_COLOR_ROTTEN_GREEN);
 
     bkgd(COLOR_PAIR(1));
 }
@@ -53,16 +58,16 @@ static void char_for_tile(enum grid_tile tile, cchar_t *pic)
 {
     switch (tile) {
         case TILE_WALL:
-            setcchar(pic, ALPHA_75, WA_NORMAL, 2, NULL);
+            setcchar(pic, ALPHA_25, WA_NORMAL, 4, NULL);
             break;
         case TILE_WALL_DARK:
-            setcchar(pic, ALPHA_100, WA_NORMAL, 2, NULL);
+            setcchar(pic, ALPHA_25, WA_NORMAL, 5, NULL);
             break;
         case TILE_EMPTY:
-            setcchar(pic, ALPHA_25, WA_NORMAL, 3, NULL);
+            setcchar(pic, ALPHA_25, WA_NORMAL, 2, NULL);
             break;
         case TILE_EMPTY_DARK:
-            setcchar(pic, ALPHA_0, WA_NORMAL, 3, NULL);
+            setcchar(pic, ALPHA_0, WA_NORMAL, 2, NULL);
             break;
         case TILE_UNKNOWN:
         default:
@@ -139,7 +144,6 @@ static enum grid_tile get_tile(struct game_state *game, int x, int y)
 void render(struct game_state *game)
 {
     int h, w;
-    int num_captured = 0;
 
     clear();
     getmaxyx(stdscr, h, w);
@@ -153,7 +157,7 @@ void render(struct game_state *game)
 
     for (size_t i = 0; i < game->num_letters; i++)
         if (game->letters[i].captured)
-            mvaddch(SIZEY, num_captured++, game->letters[i].val);
+            mvaddch(SIZEY, i, game->letters[i].val);
         else
             mvaddch(
                     game->letters[i].pos.y,

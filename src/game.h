@@ -19,7 +19,6 @@ struct letter {
 
 struct player {
     struct grid_pos  pos;
-    bool             torch;
 };
 
 enum cheat_code {

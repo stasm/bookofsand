@@ -50,6 +50,12 @@ void render_init(void)
     init_pair(3, TERM_COLOR_WHITE, TERM_COLOR_MEDIUM_GRAY);
     init_pair(4, TERM_COLOR_LIGHT_GRAY, TERM_COLOR_DARK_GRAY);
 
+    /* Letters */
+    init_pair(5, TERM_COLOR_WHITE, TERM_COLOR_MEDIUM_GRAY);
+    init_pair(6, 248, TERM_COLOR_MEDIUM_GRAY);
+    init_pair(7, 244, TERM_COLOR_MEDIUM_GRAY);
+    init_pair(8, 240, TERM_COLOR_MEDIUM_GRAY);
+
     bkgd(COLOR_PAIR(0));
 }
 
@@ -105,20 +111,28 @@ static bool is_visible(struct game_state *game, int x, int y)
     return true;
 }
 
-static bool is_illuminated(struct game_state *game, int x, int y)
-{
-    if (!game->player.torch)
-        return false;
-
-    int r = 5;
-    int dx = abs(game->player.pos.x - x);
-    int dy = abs(game->player.pos.y - y);
-    return dx * dx + dy * dy < r * r;
-}
-
 static bool is_seen(struct game_state *game, int x, int y)
 {
     return game->seen[y][x];
+}
+
+static double get_distance(struct game_state *game, int x, int y)
+{
+    int dx = abs(game->player.pos.x - x);
+    int dy = abs(game->player.pos.y - y);
+    return sqrt(dx * dx + dy * dy);
+}
+
+static int get_color_for_distance(int dist)
+{
+    if (dist < 6)
+        return 5;
+    if (dist < 11)
+        return 6;
+    if (dist < 16)
+        return 7;
+
+    return 8;
 }
 
 static bool in_map_bounds(int x, int y) {
@@ -142,13 +156,8 @@ static enum grid_tile get_tile(struct game_state *game, int x, int y)
      if (!in_map_bounds(x, y))
          return TILE_UNKNOWN;
 
-     if (is_visible(game, x, y)) {
-         if (is_illuminated(game, x, y)) {
-             return game->map[y][x];
-         } else {
-             return get_tile_dark(game->map[y][x]);
-         }
-     }
+     if (is_visible(game, x, y))
+         return game->map[y][x];
 
      if (is_seen(game, x, y))
          return get_tile_dark(game->map[y][x]);
@@ -168,8 +177,9 @@ void render_letter(struct game_state *game, struct letter *letter)
     if (is_visible(game, letter->pos.x, letter->pos.y)) {
         wchar_t val[1];
         cchar_t pic;
-        int color = is_illuminated(game, letter->pos.x, letter->pos.y) ? 3 : 4;
         mbstowcs(val, &letter->val, 1);
+        int color = get_color_for_distance(
+                get_distance(game, letter->pos.x, letter->pos.y));
         setcchar(&pic, val, WA_NORMAL, color, NULL);
         mvadd_wch(letter->pos.y, letter->pos.x, &pic);
     }
@@ -178,8 +188,7 @@ void render_letter(struct game_state *game, struct letter *letter)
 void render_player(struct game_state *game)
 {
     cchar_t pic;
-    int color = game->player.torch  ? 3 : 4;
-    setcchar(&pic, L"@", WA_NORMAL, color, NULL);
+    setcchar(&pic, L"@", WA_NORMAL, 3, NULL);
     mvadd_wch(game->player.pos.y, game->player.pos.x, &pic);
 }
 
@@ -206,7 +215,7 @@ void render(struct game_state *game)
 
     render_player(game);
 
-    mvprintw(SIZEY + 1, game->num_letters + 4, "move: hjkl   torch: t");
+    mvprintw(SIZEY + 1, game->num_letters + 4, "move: hjkl");
 
     refresh();
 }

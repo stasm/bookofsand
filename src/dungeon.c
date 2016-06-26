@@ -191,7 +191,7 @@ void dungeon_init(struct game_state *game)
     for (y = 0; y < SIZEY; y++)
         for (x = 0; x < SIZEX; x++) {
             game->map[y][x] = TILE_WALL;
-            game->seen[y][x] = true;
+            game->seen[y][x] = false;
         }
 
     game->area = create_area(

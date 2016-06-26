@@ -47,10 +47,10 @@ void input_get(struct input_state *input)
         case 'n':
             input->dir = DIRECTION_SE;
             break;
-        default:
-            input->dir = DIRECTION_NONE;
         case 't':
             input->torch = !input->torch;
             break;
+        default:
+            input->dir = DIRECTION_NONE;
     }
 }

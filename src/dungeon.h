@@ -28,11 +28,17 @@ enum grid_split_dir {
     SPLIT_HORIZONTAL
 };
 
-#define MAX_NESTING         4
+#define MAX_NESTING         5
 #define ROOM_MIN_WIDTH      7
 #define ROOM_MIN_HEIGHT     3
 #define ROOM_MAX_WH_RATIO   3
 #define ROOM_MAX_HW_RATIO   2
+#define ROOM_MIN_OVERLAP    5
+
+struct grid_room {
+    struct grid_pos      north_west;
+    struct grid_pos      south_east;
+};
 
 struct grid_area {
     struct grid_pos      north_west;
@@ -41,6 +47,7 @@ struct grid_area {
     enum grid_split_dir  split_dir;
     struct grid_area    *first_leaf;
     struct grid_area    *second_leaf;
+    struct grid_room     room;
 };
 
 void dungeon_init(struct game_state *);

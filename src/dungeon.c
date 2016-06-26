@@ -108,18 +108,83 @@ static void split_area(struct grid_area *area)
 static void dig_room(struct game_state *game, struct grid_area *area)
 {
     int r = rand();
+    /* first and last good tile to start digging */
     int min_x1 = area->north_west.x + 1;
-    int max_x1 = area->south_east.x + 1 - ROOM_MIN_WIDTH;
-    int x1 = rand_between(r, min_x1, max_x1);
-    int x2 = rand_between(r, x1 + ROOM_MIN_WIDTH, area->south_east.x + 1);
+    int max_x1 = area->south_east.x - ROOM_MIN_WIDTH;
+    int x1 = rand_between(r, min_x1, max_x1 + 1);
+    int x2 = rand_between(r, x1 + ROOM_MIN_WIDTH - 1, area->south_east.x);
     int min_y1 = area->north_west.y + 1;
-    int max_y1 = area->south_east.y + 1 - ROOM_MIN_HEIGHT;
-    int y1 = rand_between(r, min_y1, max_y1);
-    int y2 = rand_between(r, y1 + ROOM_MIN_HEIGHT, area->south_east.y + 1);
+    int max_y1 = area->south_east.y - ROOM_MIN_HEIGHT;
+    int y1 = rand_between(r, min_y1, max_y1 + 1);
+    int y2 = rand_between(r, y1 + ROOM_MIN_HEIGHT - 1, area->south_east.y);
 
-    for (int y = y1; y < y2; y++)
-        for (int x = x1; x < x2; x++)
+    area->room = (struct grid_room) {
+        (struct grid_pos) { x1, y1 }, (struct grid_pos) { x2, y2 }
+    };
+
+    for (int y = y1; y <= y2; y++)
+        for (int x = x1; x <= x2; x++)
             game->map[y][x] = TILE_EMPTY;
+}
+
+static bool rooms_overlap(struct grid_room a, struct grid_room b,
+                            enum grid_split_dir split_dir)
+{
+    switch (split_dir) {
+        case SPLIT_HORIZONTAL: {
+            int ha = a.south_east.y - a.north_west.y + 1;
+            int hb = b.south_east.y - b.north_west.y + 1;
+            int diff = a.south_east.y - b.north_west.y + 1;
+
+            return ROOM_MIN_OVERLAP <= diff
+                && diff <= ha + hb - ROOM_MIN_OVERLAP;
+        }
+        case SPLIT_VERTICAL: {
+            int wa = a.south_east.x - a.north_west.x + 1;
+            int wb = b.south_east.x - b.north_west.x + 1;
+            int diff = a.south_east.x - b.north_west.x +1;
+
+            return ROOM_MIN_OVERLAP <= diff
+                && diff <= wa + wb - ROOM_MIN_OVERLAP;
+        }
+    }
+
+    return false;
+}
+
+static void dig_corridor(struct game_state *game, int x1, int y1, int x2,
+                         int y2)
+{
+    for (int y = y1; y <= y2; y++)
+        game->map[y][x2] = TILE_EMPTY;
+    for (int x = x1; x <= x2; x++)
+        game->map[y1][x] = TILE_EMPTY;
+}
+
+static void connect_rooms(struct game_state *game, struct grid_area *a,
+                          struct grid_area *b, enum grid_split_dir split_dir)
+{
+    if (rooms_overlap(a->room, b->room, split_dir)) {
+        int r = rand();
+        switch (split_dir) {
+            case SPLIT_HORIZONTAL: {
+                int min_y = max(a->room.north_west.y, b->room.north_west.y);
+                int max_y = min(a->room.south_east.y, b->room.south_east.y);
+                int x1 = a->room.south_east.x;
+                int x2 = b->room.north_west.x;
+                int y = rand_between(r, min_y, max_y + 1);
+                dig_corridor(game, x1, y, x2, y);
+            }
+            case SPLIT_VERTICAL: {
+                int min_x = max(a->room.north_west.x, b->room.north_west.x);
+                int max_x = min(a->room.south_east.x, b->room.south_east.x);
+                int x = rand_between(r, min_x, max_x + 1);
+                int y1 = a->room.south_east.y;
+                int y2 = b->room.north_west.y;
+                dig_corridor(game, x, y1, x, y2);
+            }
+        }
+    }
 }
 
 static void dig_area(struct game_state *game, struct grid_area *area)
@@ -127,6 +192,7 @@ static void dig_area(struct game_state *game, struct grid_area *area)
     if (area->first_leaf != NULL && area->second_leaf != NULL) {
         dig_area(game, area->first_leaf);
         dig_area(game, area->second_leaf);
+        connect_rooms(game, area->first_leaf, area->second_leaf, area->split_dir);
     } else {
         dig_room(game, area);
     }

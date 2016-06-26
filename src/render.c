@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <math.h>
+#include <wchar.h>
 
 #ifdef __APPLE__
 #include <ncurses.h>
@@ -21,14 +22,13 @@
 
 enum term_color {
     TERM_COLOR_BLACK         = 16,
-    TERM_COLOR_BROWN         = 52,
     TERM_COLOR_ROTTEN_GREEN  = 59,
     TERM_COLOR_LIGHT_PINK    = 174,
     TERM_COLOR_LIGHT_ORANGE  = 180,
-    TERM_COLOR_BEIGE         = 228,
     TERM_COLOR_WHITE         = 231,
     TERM_COLOR_DARK_GRAY     = 235,
-    TERM_COLOR_MEDIUM_GRAY   = 241,
+    TERM_COLOR_MEDIUM_GRAY   = 237,
+    TERM_COLOR_LIGHT_GRAY    = 245,
 };
 
 void render_init(void)
@@ -40,13 +40,17 @@ void render_init(void)
     curs_set(FALSE);
 
     start_color();
-    init_pair(1, TERM_COLOR_WHITE, TERM_COLOR_BLACK);
-    init_pair(2, TERM_COLOR_MEDIUM_GRAY, TERM_COLOR_DARK_GRAY);  /* Floor */
-    init_pair(3, TERM_COLOR_BROWN, TERM_COLOR_BEIGE);
-    init_pair(4, TERM_COLOR_WHITE, TERM_COLOR_LIGHT_ORANGE);
-    init_pair(5, TERM_COLOR_LIGHT_PINK, TERM_COLOR_ROTTEN_GREEN);
+    init_pair(0, TERM_COLOR_WHITE, TERM_COLOR_BLACK);
 
-    bkgd(COLOR_PAIR(1));
+    /* Walls */
+    init_pair(1, TERM_COLOR_WHITE, TERM_COLOR_LIGHT_ORANGE);
+    init_pair(2, TERM_COLOR_LIGHT_PINK, TERM_COLOR_ROTTEN_GREEN);
+
+    /* Floor */
+    init_pair(3, TERM_COLOR_WHITE, TERM_COLOR_MEDIUM_GRAY);
+    init_pair(4, TERM_COLOR_LIGHT_GRAY, TERM_COLOR_DARK_GRAY);
+
+    bkgd(COLOR_PAIR(0));
 }
 
 void render_teardown(void)
@@ -58,20 +62,20 @@ static void char_for_tile(enum grid_tile tile, cchar_t *pic)
 {
     switch (tile) {
         case TILE_WALL:
-            setcchar(pic, ALPHA_25, WA_NORMAL, 4, NULL);
+            setcchar(pic, ALPHA_25, WA_NORMAL, 1, NULL);
             break;
         case TILE_WALL_DARK:
-            setcchar(pic, ALPHA_25, WA_NORMAL, 5, NULL);
-            break;
-        case TILE_EMPTY:
             setcchar(pic, ALPHA_25, WA_NORMAL, 2, NULL);
             break;
+        case TILE_EMPTY:
+            setcchar(pic, ALPHA_0, WA_NORMAL, 3, NULL);
+            break;
         case TILE_EMPTY_DARK:
-            setcchar(pic, ALPHA_0, WA_NORMAL, 2, NULL);
+            setcchar(pic, ALPHA_0, WA_NORMAL, 4, NULL);
             break;
         case TILE_UNKNOWN:
         default:
-            setcchar(pic, ALPHA_0, WA_NORMAL, 1, NULL);
+            setcchar(pic, ALPHA_0, WA_NORMAL, 0, NULL);
     }
 }
 
@@ -98,11 +102,11 @@ static bool is_visible(struct game_state *game, int x, int y)
     return true;
 }
 
-static bool is_near(struct grid_pos pos, int x, int y)
+static bool is_illuminated(struct game_state *game, int x, int y)
 {
     int r = 5;
-    int dx = abs(pos.x - x);
-    int dy = abs(pos.y - y);
+    int dx = abs(game->player.pos.x - x);
+    int dy = abs(game->player.pos.y - y);
     return dx * dx + dy * dy < r * r;
 }
 
@@ -128,7 +132,7 @@ static enum grid_tile get_tile(struct game_state *game, int x, int y)
          return TILE_UNKNOWN;
 
      if (is_visible(game, x, y)) {
-         if (is_near(game->player.pos, x, y)) {
+         if (is_illuminated(game, x, y)) {
              return game->map[y][x];
          } else {
              return get_tile_dark(game->map[y][x]);
@@ -141,11 +145,32 @@ static enum grid_tile get_tile(struct game_state *game, int x, int y)
      return TILE_UNKNOWN;
 }
 
+void render_tile(struct game_state *game, int x, int y)
+{
+    cchar_t pic;
+    char_for_tile(get_tile(game, x, y), &pic);
+    mvadd_wch(y, x, &pic);
+}
+
 void render_letter(struct game_state *game, struct letter *letter)
 {
-    if (is_visible(game, letter->pos.x, letter->pos.y))
-        mvaddch(letter->pos.y, letter->pos.x, letter->val);
+    if (is_visible(game, letter->pos.x, letter->pos.y)) {
+        wchar_t val[1];
+        cchar_t pic;
+        int color = is_illuminated(game, letter->pos.x, letter->pos.y) ? 3 : 4;
+        mbstowcs(val, &letter->val, 1);
+        setcchar(&pic, val, WA_NORMAL, color, NULL);
+        mvadd_wch(letter->pos.y, letter->pos.x, &pic);
+    }
 }
+
+void render_player(struct game_state *game)
+{
+    cchar_t pic;
+    setcchar(&pic, L"@", WA_NORMAL, 3, NULL);
+    mvadd_wch(game->player.pos.y, game->player.pos.x, &pic);
+}
+
 
 void render(struct game_state *game)
 {
@@ -156,9 +181,7 @@ void render(struct game_state *game)
 
     for (int y = 0; y < h; y++)
         for (int x = 0; x < w; x++) {
-            cchar_t pic;
-            char_for_tile(get_tile(game, x, y), &pic);
-            mvadd_wch(y, x, &pic);
+            render_tile(game, x, y);
         }
 
     for (size_t i = 0; i < game->num_letters; i++)
@@ -169,7 +192,7 @@ void render(struct game_state *game)
             render_letter(game, &game->letters[i]);
         }
 
-    mvaddch(game->player.pos.y, game->player.pos.x, '@');
+    render_player(game);
 
     refresh();
 }

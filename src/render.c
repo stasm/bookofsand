@@ -141,6 +141,12 @@ static enum grid_tile get_tile(struct game_state *game, int x, int y)
      return TILE_UNKNOWN;
 }
 
+void render_letter(struct game_state *game, struct letter *letter)
+{
+    if (is_visible(game, letter->pos.x, letter->pos.y))
+        mvaddch(letter->pos.y, letter->pos.x, letter->val);
+}
+
 void render(struct game_state *game)
 {
     int h, w;
@@ -157,14 +163,10 @@ void render(struct game_state *game)
 
     for (size_t i = 0; i < game->num_letters; i++)
         if (game->letters[i].captured) {
-            mvaddch(SIZEY, i, game->letters[i].val);
+            mvaddch(SIZEY + 1, i, game->letters[i].val);
         } else {
-            mvaddch(SIZEY, i, '_');
-            mvaddch(
-                    game->letters[i].pos.y,
-                    game->letters[i].pos.x,
-                    game->letters[i].val
-                   );
+            mvaddch(SIZEY + 1, i, '_');
+            render_letter(game, &game->letters[i]);
         }
 
     mvaddch(game->player.pos.y, game->player.pos.x, '@');

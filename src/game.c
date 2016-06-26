@@ -76,8 +76,8 @@ void game_process(struct game_state *game, struct input_state *input)
 {
     input_get(input);
 
-    if (game->player.torch != input->torch)
-        game->player.torch = input->torch;
+    if (input->torch)
+        game->player.torch = !game->player.torch;
 
     move_player(game, input->dir);
 }
@@ -87,7 +87,10 @@ void game_init(struct game_state *game, char *magic_word)
 {
     dungeon_init(game);
 
-    game->player.pos = dungeon_rand_pos(game);
+    game->player = (struct player) {
+        .pos   = dungeon_rand_pos(game),
+        .torch = false
+    };
 
     game->magic_word = magic_word;
     game->num_letters = strlen(magic_word);

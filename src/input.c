@@ -1,17 +1,11 @@
 #include <ncurses.h>
 #include "input.h"
 
-void input_init(struct input_state *input)
+void input_clear(struct input_state *input)
 {
     input->dir  = DIRECTION_NONE;
     input->quit = false;
     input->torch = false;
-}
-
-static void input_clear(struct input_state *input)
-{
-    input->dir  = DIRECTION_NONE;
-    input->quit = false;
 }
 
 void input_get(struct input_state *input)
@@ -48,7 +42,7 @@ void input_get(struct input_state *input)
             input->dir = DIRECTION_SE;
             break;
         case 't':
-            input->torch = !input->torch;
+            input->torch = true;
             break;
         default:
             input->dir = DIRECTION_NONE;

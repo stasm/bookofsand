@@ -66,5 +66,8 @@ int main(int argc, char **argv)
         game_process(&game, &input);
     } while (!input.quit);
 
+
     render_teardown();
+
+    printf("The magic word was '%s'\n", word);
 }

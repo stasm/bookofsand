@@ -9,10 +9,8 @@ void input_clear(struct input_state *input)
 
 void input_get(struct input_state *input)
 {
-    int c = 0;
+    int c = getch();
     input_clear(input);
-
-    while (!(c=getch()));
 
     switch (c) {
         case 'q':

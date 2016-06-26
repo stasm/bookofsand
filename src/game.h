@@ -19,6 +19,7 @@ struct letter {
 
 struct player {
     struct grid_pos  pos;
+    bool             torch;
 };
 
 struct game_state {

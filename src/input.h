@@ -16,9 +16,12 @@ enum input_dir {
 };
 
 struct input_state {
-    bool            quit;
     enum input_dir  dir;
+    bool            quit;
+    bool            torch;
 };
+
+void input_init(struct input_state *);
 
 void input_get(struct input_state *);
 

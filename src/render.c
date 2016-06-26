@@ -104,6 +104,9 @@ static bool is_visible(struct game_state *game, int x, int y)
 
 static bool is_illuminated(struct game_state *game, int x, int y)
 {
+    if (!game->player.torch)
+        return false;
+
     int r = 5;
     int dx = abs(game->player.pos.x - x);
     int dy = abs(game->player.pos.y - y);
@@ -167,7 +170,8 @@ void render_letter(struct game_state *game, struct letter *letter)
 void render_player(struct game_state *game)
 {
     cchar_t pic;
-    setcchar(&pic, L"@", WA_NORMAL, 3, NULL);
+    int color = game->player.torch  ? 3 : 4;
+    setcchar(&pic, L"@", WA_NORMAL, color, NULL);
     mvadd_wch(game->player.pos.y, game->player.pos.x, &pic);
 }
 
@@ -193,6 +197,8 @@ void render(struct game_state *game)
         }
 
     render_player(game);
+
+    mvprintw(SIZEY + 1, game->num_letters + 4, "move: hjkl   torch: t");
 
     refresh();
 }

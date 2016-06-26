@@ -75,6 +75,10 @@ void move_player(struct game_state *game, enum input_dir dir)
 void game_process(struct game_state *game, struct input_state *input)
 {
     input_get(input);
+
+    if (game->player.torch != input->torch)
+        game->player.torch = input->torch;
+
     move_player(game, input->dir);
 }
 

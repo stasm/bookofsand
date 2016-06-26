@@ -58,6 +58,7 @@ int main(int argc, char **argv)
     srand(hash(word));
 
     game_init(&game, word);
+    input_init(&input);
     render_init();
 
     do {

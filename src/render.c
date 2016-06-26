@@ -82,6 +82,9 @@ static void char_for_tile(enum grid_tile tile, cchar_t *pic)
 /* See http://www.redblobgames.com/grids/line-drawing.html */
 static bool is_visible(struct game_state *game, int x, int y)
 {
+    if (game->cheats & CHEAT_REVEAL_MAP)
+        return true;
+
     int dx = abs(game->player.pos.x - x);
     int dy = abs(game->player.pos.y - y);
     int steps = max(dx, dy);
@@ -113,6 +116,11 @@ static bool is_illuminated(struct game_state *game, int x, int y)
     return dx * dx + dy * dy < r * r;
 }
 
+static bool is_seen(struct game_state *game, int x, int y)
+{
+    return game->seen[y][x];
+}
+
 static bool in_map_bounds(int x, int y) {
     return x >= 0 && x < SIZEX && y >= 0 && y < SIZEY;
 }
@@ -142,7 +150,7 @@ static enum grid_tile get_tile(struct game_state *game, int x, int y)
          }
      }
 
-     if (game->seen[y][x])
+     if (is_seen(game, x, y))
          return get_tile_dark(game->map[y][x]);
 
      return TILE_UNKNOWN;

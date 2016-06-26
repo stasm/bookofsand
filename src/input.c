@@ -6,6 +6,7 @@ void input_clear(struct input_state *input)
     input->dir  = DIRECTION_NONE;
     input->quit = false;
     input->torch = false;
+    input->cheat_reveal_map = false;
 }
 
 void input_get(struct input_state *input)
@@ -43,6 +44,9 @@ void input_get(struct input_state *input)
             break;
         case 't':
             input->torch = true;
+            break;
+        case 'z':
+            input->cheat_reveal_map = true;
             break;
         default:
             input->dir = DIRECTION_NONE;

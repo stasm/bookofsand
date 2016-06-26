@@ -22,6 +22,11 @@ struct player {
     bool             torch;
 };
 
+enum cheat_code {
+    CHEAT_NONE        = 0,
+    CHEAT_REVEAL_MAP  = 1
+};
+
 struct game_state {
     struct player     player;
     char             *magic_word;
@@ -30,6 +35,7 @@ struct game_state {
     struct grid_area *area;
     enum grid_tile    map[SIZEY][SIZEX];
     bool              seen[SIZEY][SIZEX];
+    int               cheats;
 };
 
 void game_process(struct game_state *, struct input_state *);

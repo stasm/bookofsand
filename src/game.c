@@ -79,6 +79,9 @@ void game_process(struct game_state *game, struct input_state *input)
     if (input->torch)
         game->player.torch = !game->player.torch;
 
+    if (input->cheat_reveal_map)
+        game->cheats ^= CHEAT_REVEAL_MAP;
+
     move_player(game, input->dir);
 }
 
@@ -101,4 +104,6 @@ void game_init(struct game_state *game, char *magic_word)
             game->letters[i] = (struct letter ) {
                 game->magic_word[i], dungeon_rand_pos(game), false
             };
+
+    game->cheats = CHEAT_NONE;
 }

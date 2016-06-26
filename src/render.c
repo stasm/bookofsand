@@ -156,14 +156,16 @@ void render(struct game_state *game)
         }
 
     for (size_t i = 0; i < game->num_letters; i++)
-        if (game->letters[i].captured)
+        if (game->letters[i].captured) {
             mvaddch(SIZEY, i, game->letters[i].val);
-        else
+        } else {
+            mvaddch(SIZEY, i, '_');
             mvaddch(
                     game->letters[i].pos.y,
                     game->letters[i].pos.x,
                     game->letters[i].val
                    );
+        }
 
     mvaddch(game->player.pos.y, game->player.pos.x, '@');
 

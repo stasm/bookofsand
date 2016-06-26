@@ -19,12 +19,13 @@ struct player {
 };
 
 struct game_state {
-    struct player    player;
-    char            *magic_word;
-    size_t           num_letters;
-    struct letter   *letters;
-    enum grid_tile   map[SIZEY][SIZEX];
-    bool             seen[SIZEY][SIZEX];
+    struct player     player;
+    char             *magic_word;
+    size_t            num_letters;
+    struct letter    *letters;
+    struct grid_area *area;
+    enum grid_tile    map[SIZEY][SIZEX];
+    bool              seen[SIZEY][SIZEX];
 };
 
 void game_process(struct game_state *, struct input_state *);

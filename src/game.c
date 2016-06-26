@@ -87,8 +87,7 @@ void game_init(struct game_state *game, char *magic_word)
 
     game->magic_word = magic_word;
     game->num_letters = strlen(magic_word);
-    game->letters =
-        (struct letter *) malloc(game->num_letters * sizeof(struct letter));
+    game->letters = malloc(game->num_letters * sizeof(struct letter));
 
     if (game->letters != NULL)
         for (size_t i = 0; i < game->num_letters; i++)

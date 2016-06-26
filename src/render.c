@@ -106,7 +106,7 @@ static bool is_near(struct grid_pos pos, int x, int y)
     return dx * dx + dy * dy < r * r;
 }
 
-static bool in_bounds(int x, int y) {
+static bool in_map_bounds(int x, int y) {
     return x >= 0 && x < SIZEX && y >= 0 && y < SIZEY;
 }
 
@@ -124,7 +124,7 @@ static enum grid_tile get_tile_dark(enum grid_tile tile)
 
 static enum grid_tile get_tile(struct game_state *game, int x, int y)
 {
-     if (!in_bounds(x, y))
+     if (!in_map_bounds(x, y))
          return TILE_UNKNOWN;
 
      if (is_visible(game, x, y)) {

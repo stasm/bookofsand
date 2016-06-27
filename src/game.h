@@ -33,7 +33,6 @@ struct game_state {
     char             *magic_word;
     size_t            num_letters;
     struct letter    *letters;
-    struct grid_area *area;
     enum grid_tile    map[SIZEY][SIZEX];
     bool              seen[SIZEY][SIZEX];
     int               cheats;

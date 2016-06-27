@@ -206,14 +206,14 @@ void dungeon_init(struct game_state *game)
             game->seen[y][x] = false;
         }
 
-    game->area = create_area(
+    struct grid_area *area = create_area(
             (struct grid_pos) { 0, 0 },
             (struct grid_pos) { SIZEX - 1, SIZEY - 1 },
             0);
 
-    split_area(game->area);
-    dig_area(game, game->area);
-    free_area(game->area);
+    split_area(area);
+    dig_area(game, area);
+    free_area(area);
 }
 
 struct grid_pos dungeon_rand_pos(struct game_state *game)

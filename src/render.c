@@ -40,6 +40,7 @@ void render_init(void)
     cbreak();
     noecho();
     curs_set(FALSE);
+    keypad(stdscr, TRUE);
 
     start_color();
     init_pair(0, TERM_COLOR_WHITE, TERM_COLOR_BLACK);

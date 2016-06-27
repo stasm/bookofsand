@@ -222,17 +222,19 @@ void render(struct game_state *game)
             render_tile(game, x, y);
         }
 
+    mvprintw(SIZEY + 1, 1, "word: ");
+
     for (size_t i = 0; i < game->num_letters; i++)
         if (game->letters[i].captured) {
-            mvaddch(SIZEY + 1, i, game->letters[i].val);
+            mvaddch(SIZEY + 1, i + 8, game->letters[i].val);
         } else {
-            mvaddch(SIZEY + 1, i, '_');
+            mvaddch(SIZEY + 1, i + 8, '_');
             render_letter(game, &game->letters[i]);
         }
 
-    render_player(game);
+    mvprintw(SIZEY + 1, game->num_letters + 12, "move: hjkl");
 
-    mvprintw(SIZEY + 1, game->num_letters + 4, "move: hjkl");
+    render_player(game);
 
     refresh();
 }

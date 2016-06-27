@@ -8,6 +8,7 @@
 
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 #define min(a,b) (((a) < (b)) ? (a) : (b))
+#define sgn(a)   (((a) > 0) - ((a) < 0))
 
 struct grid_pos;
 

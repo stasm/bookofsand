@@ -85,29 +85,43 @@ static void char_for_tile(enum grid_tile tile, cchar_t *pic)
     }
 }
 
-/* See http://www.redblobgames.com/grids/line-drawing.html */
-static bool is_visible(struct game_state *game, int x, int y)
+/* See http://members.chello.at/~easyfilter/bresenham.html */
+static bool is_visible(struct game_state *game, int x1, int y1)
 {
     if (game->cheats & CHEAT_REVEAL_MAP)
         return true;
 
-    int dx = abs(game->player.pos.x - x);
-    int dy = abs(game->player.pos.y - y);
-    int steps = max(dx, dy);
-    int step = 0;
+    int x0 = game->player.pos.x;
+    int y0 = game->player.pos.y;
+    int dx = x1 - x0;
+    int dy = y1 - y0;
+    int sx = sgn(dx);
+    int sy = sgn(dy);
+    dx =  abs(dx);
+    dy = -abs(dy);
+    int err = dx + dy;
+    int err_next;
 
-    while (++step <= steps - 1) {
-        double t = (double) step / (double) steps;
-        int u = game->player.pos.x + t * (x - game->player.pos.x);
-        int v = game->player.pos.y + t * (y - game->player.pos.y);
+    for(;;) {
+        game->seen[y0][x0] = true;
 
-        game->seen[v][u] = true;
+        if (x0 == x1 && y0 == y1)
+            break;
 
-        if (game->map[v][u] == TILE_WALL)
+        if (game->map[y0][x0] == TILE_WALL)
             return false;
+
+        err_next = err * 2;
+        if (err_next >= dy) {
+            err += dy;
+            x0 += sx;
+        }
+        if (err_next <= dx) {
+            err += dx;
+            y0 += sy;
+        }
     }
 
-    game->seen[y][x] = true;
     return true;
 }
 

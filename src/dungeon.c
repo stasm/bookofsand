@@ -135,6 +135,7 @@ static void dig_room(struct game_state *game, struct grid_area *area)
             game->map[y][x] = TILE_EMPTY;
 }
 
+/* See http://www.redblobgames.com/grids/line-drawing.html */
 static void dig_line(struct game_state *game,
                      struct grid_pos p1,
                      struct grid_pos p2)

@@ -23,18 +23,12 @@ enum grid_tile {
     TILE_CORRIDOR_DARK
 };
 
-#define SPLIT_LENGTH 2
+#define SPLIT_LENGTH  2
 
 enum grid_split_dir {
     SPLIT_VERTICAL,
     SPLIT_HORIZONTAL
 };
-
-#define MAX_NESTING         5
-#define ROOM_MIN_WIDTH      7
-#define ROOM_MIN_HEIGHT     3
-#define ROOM_MAX_WH_RATIO   3
-#define ROOM_MAX_HW_RATIO   2
 
 struct grid_area {
     struct grid_pos      north_west;

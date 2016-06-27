@@ -38,6 +38,16 @@ static struct grid_area *create_area(struct grid_pos north_west,
     return area;
 }
 
+static void free_area(struct grid_area *area)
+{
+    if (area == NULL)
+        return;
+
+    free_area(area->first_leaf);
+    free_area(area->second_leaf);
+    free(area);
+}
+
 /* return a random int in [low, high) range */
 static int rand_between(int r, int low, int high)
 {
@@ -202,6 +212,7 @@ void dungeon_init(struct game_state *game)
 
     split_area(game->area);
     dig_area(game, game->area);
+    free_area(game->area);
 }
 
 struct grid_pos dungeon_rand_pos(struct game_state *game)

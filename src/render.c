@@ -206,7 +206,6 @@ void render_player(struct game_state *game)
     mvadd_wch(game->player.pos.y, game->player.pos.x, &pic);
 }
 
-
 void render(struct game_state *game)
 {
     int h, w;

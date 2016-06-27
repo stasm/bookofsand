@@ -23,8 +23,9 @@ struct player {
 };
 
 enum cheat_code {
-    CHEAT_NONE        = 0,
-    CHEAT_REVEAL_MAP  = 1
+    CHEAT_NONE             = 0,
+    CHEAT_REVEAL_MAP       = 1,
+    CHEAT_COLOR_CORRIDORS  = (1 << 1)
 };
 
 struct game_state {

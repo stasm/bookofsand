@@ -19,6 +19,7 @@ struct input_state {
     enum input_dir  dir;
     bool            quit;
     bool            cheat_reveal_map;
+    bool            cheat_color_corridors;
 };
 
 void input_init(struct input_state *);

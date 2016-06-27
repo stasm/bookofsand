@@ -23,6 +23,8 @@
 enum term_color {
     TERM_COLOR_BLACK         = 16,
     TERM_COLOR_ROTTEN_GREEN  = 59,
+    TERM_COLOR_CYAN          = 50,
+    TERM_COLOR_MAGENTA       = 162,
     TERM_COLOR_LIGHT_PINK    = 174,
     TERM_COLOR_LIGHT_ORANGE  = 180,
     TERM_COLOR_WHITE         = 231,
@@ -56,6 +58,9 @@ void render_init(void)
     init_pair(7, 244, TERM_COLOR_MEDIUM_GRAY);
     init_pair(8, 240, TERM_COLOR_MEDIUM_GRAY);
 
+    /* Debug */
+    init_pair(100, TERM_COLOR_MAGENTA, TERM_COLOR_CYAN);
+
     bkgd(COLOR_PAIR(0));
 }
 
@@ -74,12 +79,14 @@ static void char_for_tile(enum grid_tile tile, cchar_t *pic)
             setcchar(pic, ALPHA_25, WA_NORMAL, 2, NULL);
             break;
         case TILE_FLOOR:
-        case TILE_CORRIDOR:
             setcchar(pic, ALPHA_0, WA_NORMAL, 3, NULL);
             break;
         case TILE_FLOOR_DARK:
-        case TILE_CORRIDOR_DARK:
             setcchar(pic, ALPHA_0, WA_NORMAL, 4, NULL);
+            break;
+        case TILE_CORRIDOR:
+        case TILE_CORRIDOR_DARK:
+            setcchar(pic, ALPHA_100, WA_NORMAL, 100, NULL);
             break;
         case TILE_UNKNOWN:
         default:
@@ -155,15 +162,30 @@ static bool in_map_bounds(int x, int y) {
     return x >= 0 && x < SIZEX && y >= 0 && y < SIZEY;
 }
 
+static enum grid_tile
+get_tile_visible(struct game_state *game, enum grid_tile tile)
+{
+    if (game->cheats & CHEAT_COLOR_CORRIDORS)
+        return tile;
+
+    switch (tile) {
+        case TILE_CORRIDOR:
+            return TILE_FLOOR;
+        case TILE_CORRIDOR_DARK:
+            return TILE_FLOOR_DARK;
+        default:
+            return tile;
+    }
+}
+
 static enum grid_tile get_tile_dark(enum grid_tile tile)
 {
     switch (tile) {
         case TILE_WALL:
             return TILE_WALL_DARK;
         case TILE_FLOOR:
-            return TILE_FLOOR_DARK;
         case TILE_CORRIDOR:
-            return TILE_CORRIDOR_DARK;
+            return TILE_FLOOR_DARK;
         default:
             return tile;
     }
@@ -175,7 +197,7 @@ static enum grid_tile get_tile(struct game_state *game, int x, int y)
          return TILE_UNKNOWN;
 
      if (is_visible(game, x, y))
-         return game->map[y][x];
+         return get_tile_visible(game, game->map[y][x]);
 
      if (is_seen(game, x, y))
          return get_tile_dark(game->map[y][x]);

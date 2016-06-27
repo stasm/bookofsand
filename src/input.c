@@ -6,6 +6,7 @@ void input_clear(struct input_state *input)
     input->dir  = DIRECTION_NONE;
     input->quit = false;
     input->cheat_reveal_map = false;
+    input->cheat_color_corridors = false;
 }
 
 void input_get(struct input_state *input)
@@ -41,8 +42,11 @@ void input_get(struct input_state *input)
         case 'n':
             input->dir = DIRECTION_SE;
             break;
-        case 'z':
+        case '1':
             input->cheat_reveal_map = true;
+            break;
+        case '2':
+            input->cheat_color_corridors = true;
             break;
         default:
             input->dir = DIRECTION_NONE;

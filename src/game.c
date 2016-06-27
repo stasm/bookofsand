@@ -85,6 +85,9 @@ void game_process(struct game_state *game, struct input_state *input)
     if (input->cheat_reveal_map)
         game->cheats ^= CHEAT_REVEAL_MAP;
 
+    if (input->cheat_color_corridors)
+        game->cheats ^= CHEAT_COLOR_CORRIDORS;
+
     move_player(game, input->dir);
 }
 

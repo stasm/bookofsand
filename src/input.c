@@ -1,7 +1,8 @@
 #include <ncursesw/curses.h>
 #include "input.h"
 
-void input_clear(struct input_state *input)
+void
+input_clear(struct input_state *input)
 {
     input->dir  = DIRECTION_NONE;
     input->quit = false;
@@ -9,7 +10,8 @@ void input_clear(struct input_state *input)
     input->cheat_color_corridors = false;
 }
 
-void input_get(struct input_state *input)
+void
+input_get(struct input_state *input)
 {
     int c = getch();
     input_clear(input);

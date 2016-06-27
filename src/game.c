@@ -4,12 +4,14 @@
 #include "game.h"
 #include "input.h"
 
-bool equals(struct grid_pos a, struct grid_pos b)
+bool
+equals(struct grid_pos a, struct grid_pos b)
 {
     return a.x == b.x && a.y == b.y;
 }
 
-struct letter *get_letter(struct game_state *game, struct grid_pos pos)
+struct letter *
+get_letter(struct game_state *game, struct grid_pos pos)
 {
     for (size_t i = 0; i < game->num_letters; i++)
         if (equals(game->letters[i].pos, pos))
@@ -18,18 +20,21 @@ struct letter *get_letter(struct game_state *game, struct grid_pos pos)
     return NULL;
 }
 
-void capture_letter(struct letter *letter)
+void
+capture_letter(struct letter *letter)
 {
     letter->captured = true;
 }
 
-static bool is_passable(struct game_state *game, struct grid_pos *pos)
+static bool
+is_passable(struct game_state *game, struct grid_pos *pos)
 {
     enum grid_tile tile = game->map[pos->y][pos->x];
     return tile == TILE_FLOOR || tile == TILE_CORRIDOR;
 }
 
-void move_player(struct game_state *game, enum input_dir dir)
+void
+move_player(struct game_state *game, enum input_dir dir)
 {
     struct grid_pos new_pos = game->player.pos;
 
@@ -78,7 +83,8 @@ void move_player(struct game_state *game, enum input_dir dir)
         game->player.pos = new_pos;
 }
 
-void game_process(struct game_state *game, struct input_state *input)
+void
+game_process(struct game_state *game, struct input_state *input)
 {
     input_get(input);
 
@@ -92,7 +98,8 @@ void game_process(struct game_state *game, struct input_state *input)
 }
 
 
-void game_init(struct game_state *game, char *magic_word)
+void
+game_init(struct game_state *game, char *magic_word)
 {
     dungeon_init(game);
 

@@ -33,7 +33,8 @@ enum term_color {
     TERM_COLOR_LIGHT_GRAY    = 245,
 };
 
-void render_init(void)
+void
+render_init(void)
 {
     initscr();
 
@@ -65,12 +66,14 @@ void render_init(void)
     bkgd(COLOR_PAIR(0));
 }
 
-void render_teardown(void)
+void
+render_teardown(void)
 {
     endwin();
 }
 
-static void char_for_tile(enum grid_tile tile, cchar_t *pic)
+static void
+char_for_tile(enum grid_tile tile, cchar_t *pic)
 {
     switch (tile) {
         case TILE_WALL:
@@ -96,7 +99,8 @@ static void char_for_tile(enum grid_tile tile, cchar_t *pic)
 }
 
 /* See http://members.chello.at/~easyfilter/bresenham.html */
-static bool is_visible(struct game_state *game, int x1, int y1)
+static bool
+is_visible(struct game_state *game, int x1, int y1)
 {
     if (game->cheats & CHEAT_REVEAL_MAP)
         return true;
@@ -135,19 +139,22 @@ static bool is_visible(struct game_state *game, int x1, int y1)
     return true;
 }
 
-static bool is_seen(struct game_state *game, int x, int y)
+static bool
+is_seen(struct game_state *game, int x, int y)
 {
     return game->seen[y][x];
 }
 
-static double get_distance(struct game_state *game, int x, int y)
+static double
+get_distance(struct game_state *game, int x, int y)
 {
     int dx = abs(game->player.pos.x - x);
     int dy = abs(game->player.pos.y - y);
     return sqrt(dx * dx + dy * dy);
 }
 
-static int get_color_for_distance(int dist)
+static int
+get_color_for_distance(int dist)
 {
     if (dist < 6)
         return 5;
@@ -159,7 +166,8 @@ static int get_color_for_distance(int dist)
     return 8;
 }
 
-static bool in_map_bounds(int x, int y) {
+static bool
+in_map_bounds(int x, int y) {
     return x >= 0 && x < SIZEX && y >= 0 && y < SIZEY;
 }
 
@@ -179,7 +187,8 @@ get_tile_visible(struct game_state *game, enum grid_tile tile)
     }
 }
 
-static enum grid_tile get_tile_dark(enum grid_tile tile)
+static enum grid_tile
+get_tile_dark(enum grid_tile tile)
 {
     switch (tile) {
         case TILE_WALL:
@@ -192,7 +201,8 @@ static enum grid_tile get_tile_dark(enum grid_tile tile)
     }
 }
 
-static enum grid_tile get_tile(struct game_state *game, int x, int y)
+static enum grid_tile
+get_tile(struct game_state *game, int x, int y)
 {
      if (!in_map_bounds(x, y))
          return TILE_UNKNOWN;
@@ -206,14 +216,16 @@ static enum grid_tile get_tile(struct game_state *game, int x, int y)
      return TILE_UNKNOWN;
 }
 
-void render_tile(struct game_state *game, int x, int y)
+void
+render_tile(struct game_state *game, int x, int y)
 {
     cchar_t pic;
     char_for_tile(get_tile(game, x, y), &pic);
     mvadd_wch(y, x, &pic);
 }
 
-void render_letter(struct game_state *game, struct letter *letter)
+void
+render_letter(struct game_state *game, struct letter *letter)
 {
     if (is_visible(game, letter->pos.x, letter->pos.y)) {
         wchar_t val[1];
@@ -226,14 +238,16 @@ void render_letter(struct game_state *game, struct letter *letter)
     }
 }
 
-void render_player(struct game_state *game)
+void
+render_player(struct game_state *game)
 {
     cchar_t pic;
     setcchar(&pic, L"@", WA_NORMAL, 3, NULL);
     mvadd_wch(game->player.pos.y, game->player.pos.x, &pic);
 }
 
-void render(struct game_state *game)
+void
+render(struct game_state *game)
 {
     int h, w;
 

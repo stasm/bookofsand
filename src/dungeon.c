@@ -2,17 +2,20 @@
 #include "game.h"
 #include "dungeon.h"
 
-static int get_inner_width(struct grid_area *area)
+static int
+get_inner_width(struct grid_area *area)
 {
     return area->south_east.x - area->north_west.x - 1;
 }
 
-static int get_inner_height(struct grid_area *area)
+static int
+get_inner_height(struct grid_area *area)
 {
     return area->south_east.y - area->north_west.y - 1;
 }
 
-static enum grid_split_dir get_split_dir(struct grid_area *area)
+static enum grid_split_dir
+get_split_dir(struct grid_area *area)
 {
     double ratio = (double) get_inner_width(area) / get_inner_height(area);
 
@@ -24,9 +27,9 @@ static enum grid_split_dir get_split_dir(struct grid_area *area)
         return rand() % SPLIT_LENGTH;
 }
 
-static struct grid_area *create_area(struct grid_pos north_west,
-                                     struct grid_pos south_east,
-                                     int nesting)
+static struct grid_area *
+create_area(struct grid_pos north_west, struct grid_pos south_east,
+        int nesting)
 {
     struct grid_area *area = malloc(sizeof(struct grid_area));
     area->north_west = north_west;
@@ -38,7 +41,8 @@ static struct grid_area *create_area(struct grid_pos north_west,
     return area;
 }
 
-static void free_area(struct grid_area *area)
+static void
+free_area(struct grid_area *area)
 {
     if (area == NULL)
         return;
@@ -49,31 +53,36 @@ static void free_area(struct grid_area *area)
 }
 
 /* return a random int in [low, high) range */
-static int rand_between(int r, int low, int high)
+static int
+rand_between(int r, int low, int high)
 {
     return low + (r % (high - low));
 }
 
-static int rand_area_x(struct grid_area *area, int r, int padding)
+static int
+rand_area_x(struct grid_area *area, int r, int padding)
 {
     return rand_between(r, area->north_west.x + padding + 1,
             area->south_east.x - padding);
 }
 
-static int rand_area_y(struct grid_area *area, int r, int padding)
+static int
+rand_area_y(struct grid_area *area, int r, int padding)
 {
     return rand_between(r, area->north_west.y + padding + 1,
             area->south_east.y - padding);
 }
 
-static bool is_area_big_enough(struct grid_area *area)
+static bool
+is_area_big_enough(struct grid_area *area)
 {
     /* area's inner dimensions must be sufficient to comprise two rooms */
     return get_inner_width(area) > 2 * ROOM_MIN_WIDTH
         && get_inner_height(area) > 2 * ROOM_MIN_HEIGHT;
 }
 
-static void split_area(struct grid_area *area)
+static void
+split_area(struct grid_area *area)
 {
     if (!is_area_big_enough(area))
             return;
@@ -115,7 +124,8 @@ static void split_area(struct grid_area *area)
     split_area(area->second_leaf);
 }
 
-struct grid_pos rand_area_pos(struct game_state *game, struct grid_area *area)
+struct grid_pos
+rand_area_pos(struct game_state *game, struct grid_area *area)
 {
     do {
         int r = rand();
@@ -127,7 +137,8 @@ struct grid_pos rand_area_pos(struct game_state *game, struct grid_area *area)
     } while(1);
 }
 
-static void dig_room(struct game_state *game, struct grid_area *area)
+static void
+dig_room(struct game_state *game, struct grid_area *area)
 {
     int r = rand();
     /* first and last good tile to start digging */
@@ -146,9 +157,8 @@ static void dig_room(struct game_state *game, struct grid_area *area)
 }
 
 /* See http://www.redblobgames.com/grids/line-drawing.html */
-static void dig_line(struct game_state *game,
-                     struct grid_pos p1,
-                     struct grid_pos p2)
+static void
+dig_line(struct game_state *game, struct grid_pos p1, struct grid_pos p2)
 {
     int dx = abs(p1.x - p2.x);
     int dy = abs(p1.y - p2.y);
@@ -164,9 +174,8 @@ static void dig_line(struct game_state *game,
     }
 }
 
-static void dig_corridor(struct game_state *game,
-                         struct grid_pos p1,
-                         struct grid_pos p2)
+static void
+dig_corridor(struct game_state *game, struct grid_pos p1, struct grid_pos p2)
 {
     struct grid_pos via = rand() % 2 ?
         (struct grid_pos) { p1.x, p2.y } :
@@ -176,16 +185,17 @@ static void dig_corridor(struct game_state *game,
     dig_line(game, p2, via);
 }
 
-static void connect_rooms(struct game_state *game,
-                          struct grid_area *a1,
-                          struct grid_area *a2)
+static void
+connect_rooms(struct game_state *game, struct grid_area *a1,
+        struct grid_area *a2)
 {
     struct grid_pos p1 = rand_area_pos(game, a1);
     struct grid_pos p2 = rand_area_pos(game, a2);
     dig_corridor(game, p1, p2);
 }
 
-static void dig_area(struct game_state *game, struct grid_area *area)
+static void
+dig_area(struct game_state *game, struct grid_area *area)
 {
     if (area->first_leaf != NULL && area->second_leaf != NULL) {
         dig_area(game, area->first_leaf);
@@ -196,7 +206,8 @@ static void dig_area(struct game_state *game, struct grid_area *area)
     }
 }
 
-void dungeon_init(struct game_state *game)
+void
+dungeon_init(struct game_state *game)
 {
     int x, y;
 
@@ -216,7 +227,8 @@ void dungeon_init(struct game_state *game)
     free_area(area);
 }
 
-struct grid_pos dungeon_rand_pos(struct game_state *game)
+struct grid_pos
+dungeon_rand_pos(struct game_state *game)
 {
     do {
         int x = rand() % SIZEX;
@@ -226,4 +238,3 @@ struct grid_pos dungeon_rand_pos(struct game_state *game)
             return (struct grid_pos) { x, y };
     } while(1);
 }
-

@@ -13,7 +13,8 @@
 #define MAX_LETTERS  10
 
 /* djb2 algorithm: http://www.cse.yorku.ca/~oz/hash.html */
-static unsigned int hash(char *str)
+static unsigned int
+hash(char *str)
 {
 	unsigned int hash = 5381;
 	int c;
@@ -24,7 +25,8 @@ static unsigned int hash(char *str)
 	return hash;
 }
 
-int main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
     if (argc != 2) {
         printf("Specify the number of letters [3, 10].\n");

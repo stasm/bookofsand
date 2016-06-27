@@ -23,6 +23,12 @@ void capture_letter(struct letter *letter)
     letter->captured = true;
 }
 
+static bool is_passable(struct game_state *game, struct grid_pos *pos)
+{
+    enum grid_tile tile = game->map[pos->y][pos->x];
+    return tile == TILE_FLOOR || tile == TILE_CORRIDOR;
+}
+
 void move_player(struct game_state *game, enum input_dir dir)
 {
     struct grid_pos new_pos = game->player.pos;
@@ -68,7 +74,7 @@ void move_player(struct game_state *game, enum input_dir dir)
     if (letter != NULL)
         capture_letter(letter);
 
-    if (game->map[new_pos.y][new_pos.x] == TILE_EMPTY)
+    if (is_passable(game, &new_pos))
         game->player.pos = new_pos;
 }
 

@@ -17,8 +17,10 @@ enum grid_tile {
     TILE_UNKNOWN = 0,
     TILE_WALL,
     TILE_WALL_DARK,
-    TILE_EMPTY,
-    TILE_EMPTY_DARK
+    TILE_FLOOR,
+    TILE_FLOOR_DARK,
+    TILE_CORRIDOR,
+    TILE_CORRIDOR_DARK
 };
 
 #define SPLIT_LENGTH 2

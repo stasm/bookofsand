@@ -122,7 +122,7 @@ struct grid_pos rand_area_pos(struct game_state *game, struct grid_area *area)
         int x = rand_area_x(area, r, 1);
         int y = rand_area_y(area, r, 1);
 
-        if (game->map[y][x] == TILE_EMPTY)
+        if (game->map[y][x] == TILE_FLOOR || game->map[y][x] == TILE_CORRIDOR)
             return (struct grid_pos) { x, y };
     } while(1);
 }
@@ -142,7 +142,7 @@ static void dig_room(struct game_state *game, struct grid_area *area)
 
     for (int y = y1; y <= y2; y++)
         for (int x = x1; x <= x2; x++)
-            game->map[y][x] = TILE_EMPTY;
+            game->map[y][x] = TILE_FLOOR;
 }
 
 /* See http://www.redblobgames.com/grids/line-drawing.html */
@@ -159,7 +159,8 @@ static void dig_line(struct game_state *game,
         double t = (double) step / (double) steps;
         int u = p1.x + t * (p2.x - p1.x);
         int v = p1.y + t * (p2.y - p1.y);
-        game->map[v][u] = TILE_EMPTY;
+        if (game->map[v][u] == TILE_WALL)
+            game->map[v][u] = TILE_CORRIDOR;
     }
 }
 
@@ -221,7 +222,7 @@ struct grid_pos dungeon_rand_pos(struct game_state *game)
         int x = rand() % SIZEX;
         int y = rand() % SIZEY;
 
-        if (game->map[y][x] == TILE_EMPTY)
+        if (game->map[y][x] == TILE_FLOOR || game->map[y][x] == TILE_CORRIDOR)
             return (struct grid_pos) { x, y };
     } while(1);
 }

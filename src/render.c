@@ -73,10 +73,12 @@ static void char_for_tile(enum grid_tile tile, cchar_t *pic)
         case TILE_WALL_DARK:
             setcchar(pic, ALPHA_25, WA_NORMAL, 2, NULL);
             break;
-        case TILE_EMPTY:
+        case TILE_FLOOR:
+        case TILE_CORRIDOR:
             setcchar(pic, ALPHA_0, WA_NORMAL, 3, NULL);
             break;
-        case TILE_EMPTY_DARK:
+        case TILE_FLOOR_DARK:
+        case TILE_CORRIDOR_DARK:
             setcchar(pic, ALPHA_0, WA_NORMAL, 4, NULL);
             break;
         case TILE_UNKNOWN:
@@ -158,8 +160,10 @@ static enum grid_tile get_tile_dark(enum grid_tile tile)
     switch (tile) {
         case TILE_WALL:
             return TILE_WALL_DARK;
-        case TILE_EMPTY:
-            return TILE_EMPTY_DARK;
+        case TILE_FLOOR:
+            return TILE_FLOOR_DARK;
+        case TILE_CORRIDOR:
+            return TILE_CORRIDOR_DARK;
         default:
             return tile;
     }

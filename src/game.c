@@ -11,10 +11,10 @@ equals(struct grid_pos a, struct grid_pos b)
 }
 
 struct letter *
-get_letter(struct game_state *game, struct grid_pos pos)
+get_letter(struct game_state *game, struct grid_pos p)
 {
     for (size_t i = 0; i < game->num_letters; i++)
-        if (equals(game->letters[i].pos, pos))
+        if (equals(game->letters[i].pos, p))
             return &game->letters[i];
 
     return NULL;
@@ -27,9 +27,9 @@ capture_letter(struct letter *letter)
 }
 
 static bool
-is_passable(struct game_state *game, struct grid_pos *pos)
+is_passable(struct game_state *game, struct grid_pos *p)
 {
-    enum grid_tile tile = game->map[pos->y][pos->x];
+    enum grid_tile tile = game->map[p->y][p->x];
     return tile == TILE_FLOOR || tile == TILE_CORRIDOR;
 }
 
@@ -113,7 +113,7 @@ game_init(struct game_state *game, char *magic_word)
 
     if (game->letters != NULL)
         for (size_t i = 0; i < game->num_letters; i++)
-            game->letters[i] = (struct letter ) {
+            game->letters[i] = (struct letter) {
                 game->magic_word[i], dungeon_rand_pos(game), false
             };
 

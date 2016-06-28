@@ -100,17 +100,15 @@ char_for_tile(enum grid_tile tile, cchar_t *pic)
 
 /* See http://members.chello.at/~easyfilter/bresenham.html */
 static bool
-is_visible(struct game_state *game, int x1, int y1)
+is_visible(struct game_state *game, struct grid_pos p)
 {
     if (game->cheats & CHEAT_REVEAL_MAP)
         return true;
 
-    int x0 = game->player.pos.x;
-    int y0 = game->player.pos.y;
-    int dx = x1 - x0;
-    int dy = y1 - y0;
-    int sx = sgn(dx);
-    int sy = sgn(dy);
+    int x0 = game->player.pos.x, x1 = p.x;
+    int y0 = game->player.pos.y, y1 = p.y;
+    int dx = x1 - x0, sx = sgn(dx);
+    int dy = y1 - y0, sy = sgn(dy);
     dx =  abs(dx);
     dy = -abs(dy);
     int err = dx + dy;
@@ -140,16 +138,16 @@ is_visible(struct game_state *game, int x1, int y1)
 }
 
 static bool
-is_seen(struct game_state *game, int x, int y)
+is_seen(struct game_state *game, struct grid_pos p)
 {
-    return game->seen[y][x];
+    return game->seen[p.y][p.x];
 }
 
 static double
-get_distance(struct game_state *game, int x, int y)
+get_distance(struct game_state *game, struct grid_pos p)
 {
-    int dx = abs(game->player.pos.x - x);
-    int dy = abs(game->player.pos.y - y);
+    int dx = abs(game->player.pos.x - p.x);
+    int dy = abs(game->player.pos.y - p.y);
     return sqrt(dx * dx + dy * dy);
 }
 
@@ -167,8 +165,8 @@ get_color_for_distance(int dist)
 }
 
 static bool
-in_map_bounds(int x, int y) {
-    return x >= 0 && x < SIZEX && y >= 0 && y < SIZEY;
+in_map_bounds(struct grid_pos p) {
+    return p.x >= 0 && p.x < SIZEX && p.y >= 0 && p.y < SIZEY;
 }
 
 static enum grid_tile
@@ -202,37 +200,36 @@ get_tile_dark(enum grid_tile tile)
 }
 
 static enum grid_tile
-get_tile(struct game_state *game, int x, int y)
+get_tile(struct game_state *game, struct grid_pos p)
 {
-     if (!in_map_bounds(x, y))
+     if (!in_map_bounds(p))
          return TILE_UNKNOWN;
 
-     if (is_visible(game, x, y))
-         return get_tile_visible(game, game->map[y][x]);
+     if (is_visible(game, p))
+         return get_tile_visible(game, game->map[p.y][p.x]);
 
-     if (is_seen(game, x, y))
-         return get_tile_dark(game->map[y][x]);
+     if (is_seen(game, p))
+         return get_tile_dark(game->map[p.y][p.x]);
 
      return TILE_UNKNOWN;
 }
 
 void
-render_tile(struct game_state *game, int x, int y)
+render_tile(struct game_state *game, struct grid_pos p)
 {
     cchar_t pic;
-    char_for_tile(get_tile(game, x, y), &pic);
-    mvadd_wch(y, x, &pic);
+    char_for_tile(get_tile(game, p), &pic);
+    mvadd_wch(p.y, p.x, &pic);
 }
 
 void
 render_letter(struct game_state *game, struct letter *letter)
 {
-    if (is_visible(game, letter->pos.x, letter->pos.y)) {
+    if (is_visible(game, letter->pos)) {
         wchar_t val[1];
         cchar_t pic;
         mbstowcs(val, &letter->val, 1);
-        int color = get_color_for_distance(
-                get_distance(game, letter->pos.x, letter->pos.y));
+        int color = get_color_for_distance(get_distance(game, letter->pos));
         setcchar(&pic, val, WA_NORMAL, color, NULL);
         mvadd_wch(letter->pos.y, letter->pos.x, &pic);
     }
@@ -256,7 +253,7 @@ render(struct game_state *game)
 
     for (int y = 0; y < h; y++)
         for (int x = 0; x < w; x++) {
-            render_tile(game, x, y);
+            render_tile(game, (struct grid_pos) { x, y });
         }
 
     mvprintw(SIZEY + 1, 1, "word: ");

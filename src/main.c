@@ -9,8 +9,8 @@
 #include "input.h"
 #include "render.h"
 
-#define MIN_LETTERS  3
-#define MAX_LETTERS  10
+#define MIN_LETTERS  7
+#define MAX_LETTERS  12
 
 /* djb2 algorithm: http://www.cse.yorku.ca/~oz/hash.html */
 static unsigned int
@@ -26,23 +26,12 @@ hash(char *str)
 }
 
 int
-main(int argc, char **argv)
+main()
 {
-    if (argc != 2) {
-        printf("Specify the number of letters [3, 10].\n");
-        exit(1);
-    }
-
     setlocale(LC_ALL, "");
 
-    int num = (int) strtol(argv[1], NULL, 10);
-    if (errno == ERANGE || num < MIN_LETTERS || MAX_LETTERS < num) {
-        printf("That's not a valid number, silly!\n");
-        exit(1);
-    }
-
     int count = 0;
-    char word[11];
+    char word[13];
     char line[80];
     FILE *words = fopen("/usr/share/dict/words", "r");
 
@@ -50,7 +39,8 @@ main(int argc, char **argv)
 
     while (fgets(line, sizeof line, words) != NULL) {
         strtok(line, "\n");
-        if ((int) strlen(line) == num && rand() % ++count == 0)
+        size_t len = strlen(line);
+        if (MIN_LETTERS <= len && len <= MAX_LETTERS && rand() % ++count == 0)
             strcpy(word, line);
     }
 

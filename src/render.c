@@ -256,17 +256,15 @@ render(struct game_state *game)
             render_tile(game, (struct grid_pos) { x, y });
         }
 
-    mvprintw(SIZEY + 1, 1, "word: ");
+    mvprintw(SIZEY + 1, 0, ">");
 
     for (size_t i = 0; i < game->num_letters; i++)
         if (game->letters[i].captured) {
-            mvaddch(SIZEY + 1, i + 8, game->letters[i].val);
+            mvaddch(SIZEY + 1, i + 2, game->letters[i].val);
         } else {
-            mvaddch(SIZEY + 1, i + 8, '_');
+            mvaddch(SIZEY + 1, i + 2, '_');
             render_letter(game, &game->letters[i]);
         }
-
-    mvprintw(SIZEY + 1, game->num_letters + 12, "move: hjkl");
 
     render_player(game);
 

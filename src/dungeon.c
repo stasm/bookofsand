@@ -2,7 +2,7 @@
 #include "game.h"
 #include "dungeon.h"
 
-#define MAX_NESTING         5
+#define MAX_NESTING         6
 #define ROOM_MIN_WIDTH      7
 #define ROOM_MIN_HEIGHT     3
 #define ROOM_MAX_WH_RATIO   3

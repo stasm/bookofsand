@@ -207,7 +207,10 @@ dig_area(struct game_state *game, struct grid_area *area)
     if (area->first_leaf != NULL && area->second_leaf != NULL) {
         dig_area(game, area->first_leaf);
         dig_area(game, area->second_leaf);
-        connect_rooms(game, area->first_leaf, area->second_leaf);
+        int extra_corridors = (MAX_NESTING - area->nesting) / 2;
+        do {
+          connect_rooms(game, area->first_leaf, area->second_leaf);
+        } while (extra_corridors--);
     } else {
         dig_room(game, area);
     }

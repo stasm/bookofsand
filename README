@@ -1,20 +1,37 @@
-        Say The Magic Word
-
-Say The Magic Word is a simple roguelike game.  The player's goal is to capture 
-individual letters and create words out of them.
-
-Say The Magic Word is a learning project for me to get more familiar with C.
+        The Book of Sand
 
 
-        Build
+                He told me his book was called the Book of Sand, because 
+                neither the book nor the sand has any beginning or end.
 
-Just `make` and run `./say hello` in the working directory.  Replace `hello` 
-with any other word to seed the world and the letters to collect.
+                — Jorge Luis Borges, ‘The Book of Sand’
+
+You have come into the possesion of the Book of Sand.  The number of pages in 
+the book is no more or less than infinite.  None is the first page, none the 
+last.  Every time you leaf through its pages new words appear before your eyes.
+
+What word will it be today?
+
+
+        Background
+
+The Book of Sand (BoS) is a simple roguelike game.  The player's goal is to 
+capture letters until they can use them to spell a whole word.
+
+The Book of Sand is a learning project for me to get more familiar with C.
+
+
+        Build and Play
+
+Just `make` and run `./bookofsand` in the working directory.
 
 
         Influences
 
-The idea for the game is inspired by Jeff Lait's Letter Hunt [1].  I also 
+The theme of the game is inspired by ‘The Book of Sand,’ a short story by Jorge 
+Luis Borges.
+
+The game play has been influenced by Jeff Lait's Letter Hunt [1].  I also 
 learned a lot by reading the code of flend's ZigClimb [2] and Jakub 
 Wasilewski's A Journey To Hell [3] and Another Visit In Hell [4].  Steven 
 Feurst's 512-byte roguelike [5] and the accompanying article [6] were extremely 

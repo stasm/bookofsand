@@ -61,5 +61,5 @@ main()
 
     render_teardown(&ui);
 
-    printf("The magic word was '%s'\n", word);
+    printf("The word was: %s.\n", word);
 }

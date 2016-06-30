@@ -38,9 +38,9 @@ render_init(struct render_ui *ui)
 {
     initscr();
 
-    ui->map = newwin(SIZEY, SIZEX, 0, 0);
-    ui->status = newwin(1, SIZEX, SIZEY + 1, 0);
-    ui->log = newwin(3, SIZEX, SIZEY + 2, 0);
+    ui->map = newwin(SIZEY, SIZEX, 0, 1);
+    ui->status = newwin(1, SIZEX, SIZEY + 1, 1);
+    ui->log = newwin(3, SIZEX, SIZEY + 2, 1);
 
     cbreak();
     noecho();

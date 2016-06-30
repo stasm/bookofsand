@@ -5,7 +5,7 @@
 
 struct game_state;
 
-#define SIZEX 80
+#define SIZEX 78
 #define SIZEY 20
 
 struct grid_pos {

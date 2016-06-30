@@ -34,9 +34,13 @@ enum term_color {
 };
 
 void
-render_init(void)
+render_init(struct render_ui *ui)
 {
     initscr();
+
+    ui->map = newwin(SIZEY, SIZEX, 0, 0);
+    ui->status = newwin(1, SIZEX, SIZEY + 1, 0);
+    ui->log = newwin(3, SIZEX, SIZEY + 2, 0);
 
     cbreak();
     noecho();
@@ -63,12 +67,17 @@ render_init(void)
     /* Debug */
     init_pair(100, TERM_COLOR_MAGENTA, TERM_COLOR_CYAN);
 
-    bkgd(COLOR_PAIR(0));
+    wbkgd(ui->map, COLOR_PAIR(0));
+    wbkgd(ui->status, COLOR_PAIR(0));
+    wbkgd(ui->log, COLOR_PAIR(0));
 }
 
 void
-render_teardown(void)
+render_teardown(struct render_ui *ui)
 {
+    delwin(ui->map);
+    delwin(ui->status);
+    delwin(ui->log);
     endwin();
 }
 
@@ -215,15 +224,15 @@ get_tile(struct game_state *game, struct grid_pos p)
 }
 
 void
-render_tile(struct game_state *game, struct grid_pos p)
+render_tile(struct game_state *game, WINDOW *win, struct grid_pos p)
 {
     cchar_t pic;
     char_for_tile(get_tile(game, p), &pic);
-    mvadd_wch(p.y, p.x, &pic);
+    mvwadd_wch(win, p.y, p.x, &pic);
 }
 
 void
-render_letter(struct game_state *game, struct letter *letter)
+render_letter(struct game_state *game, WINDOW *win, struct letter *letter)
 {
     if (is_visible(game, letter->pos)) {
         wchar_t val[1];
@@ -231,42 +240,58 @@ render_letter(struct game_state *game, struct letter *letter)
         mbstowcs(val, &letter->val, 1);
         int color = get_color_for_distance(get_distance(game, letter->pos));
         setcchar(&pic, val, WA_NORMAL, color, NULL);
-        mvadd_wch(letter->pos.y, letter->pos.x, &pic);
+        mvwadd_wch(win, letter->pos.y, letter->pos.x, &pic);
     }
 }
 
 void
-render_player(struct game_state *game)
+render_player(struct game_state *game, WINDOW *win)
 {
     cchar_t pic;
     setcchar(&pic, L"@", WA_NORMAL, 3, NULL);
-    mvadd_wch(game->player.pos.y, game->player.pos.x, &pic);
+    mvwadd_wch(win, game->player.pos.y, game->player.pos.x, &pic);
 }
 
 void
-render(struct game_state *game)
+render_map(struct game_state *game, WINDOW *win)
 {
-    int h, w;
+    for (int y = 0; y < SIZEY; y++)
+        for (int x = 0; x < SIZEX; x++)
+            render_tile(game, win, (struct grid_pos) { x, y });
 
-    clear();
-    getmaxyx(stdscr, h, w);
-
-    for (int y = 0; y < h; y++)
-        for (int x = 0; x < w; x++) {
-            render_tile(game, (struct grid_pos) { x, y });
+    for (size_t i = 0; i < game->num_letters; i++)
+        if (!game->letters[i].captured) {
+            render_letter(game, win, &game->letters[i]);
         }
 
-    mvprintw(SIZEY + 1, 0, ">");
+    render_player(game, win);
+
+    wnoutrefresh(win);
+}
+
+void
+render_status(struct game_state *game, WINDOW *win)
+{
+    mvwprintw(win, 0, 0, ">");
 
     for (size_t i = 0; i < game->num_letters; i++)
         if (game->letters[i].captured) {
-            mvaddch(SIZEY + 1, i + 2, game->letters[i].val);
+            mvwaddch(win, 0, i + 2, game->letters[i].val);
         } else {
-            mvaddch(SIZEY + 1, i + 2, '_');
-            render_letter(game, &game->letters[i]);
+            mvwaddch(win, 0, i + 2, '_');
         }
 
-    render_player(game);
+    wnoutrefresh(win);
+}
 
-    refresh();
+void
+render(struct game_state *game, struct render_ui *ui)
+{
+    clear();
+
+    wnoutrefresh(stdscr);
+    render_map(game, ui->map);
+    render_status(game, ui->status);
+
+    doupdate();
 }

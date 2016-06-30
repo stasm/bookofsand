@@ -46,19 +46,20 @@ main()
 
     struct game_state game;
     struct input_state input;
+    struct render_ui ui;
 
     srand(hash(word));
 
-    render_init();
+    render_init(&ui);
     game_init(&game, word);
 
     do {
-        render(&game);
+        render(&game, &ui);
         game_process(&game, &input);
     } while (!input.quit);
 
 
-    render_teardown();
+    render_teardown(&ui);
 
     printf("The magic word was '%s'\n", word);
 }

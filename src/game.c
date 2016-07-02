@@ -6,6 +6,17 @@
 #include "input.h"
 #include "log.h"
 
+char messages[][60] = {
+    "\nThere's a tiny %c here. You'll capture it with ease.",
+    "\nYou see an unassuming %c. It's no match for you.",
+    "\nA menacing %c comes into view. Stay away from it for now.",
+    "\nYou see a looming %c. It will be a hard fight.",
+    "\nThere is a fearless %c here. You reconsider.",
+    "\nA rather dangerous %c appears. You tremble.",
+    "\nYou see a huge %c. Perhaps some other time?",
+    "\nA humongous %c comes into view. It looks very scary.",
+};
+
 bool
 equals(struct grid_pos a, struct grid_pos b)
 {
@@ -88,9 +99,12 @@ move_player(struct game_state *game, enum input_dir dir)
 void
 game_learn_letter(struct game_state *game, struct letter *letter)
 {
-    letter->known = true;
+    for (size_t i = 0; i < game->num_letters; i++)
+        if (game->letters[i].val == letter->val)
+            game->letters[i].known = true;
+
     char text[MAX_MESSAGE_LEN];
-    sprintf(text, "\nYou see a letter %c. ", letter->val);
+    sprintf(text, messages[letter->strength], letter->val);
     append_message(&game->log, text);
 }
 
@@ -129,6 +143,7 @@ game_init(struct game_state *game, char *magic_word)
                 .pos = dungeon_rand_pos(game),
                 .captured = false,
                 .known = false,
+                .strength = i,
             };
 
     struct message *msg = create_message(NULL,

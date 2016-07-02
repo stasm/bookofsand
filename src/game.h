@@ -18,6 +18,7 @@ struct letter {
     struct grid_pos  pos;
     bool             captured;
     bool             known;
+    int              strength;
 };
 
 struct player {

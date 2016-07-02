@@ -25,6 +25,21 @@ hash(char *str)
 	return hash;
 }
 
+static bool
+is_lowercase_ascii(char *s)
+{
+    int len = 0;
+
+    while (*s) {
+        if (122 < *s || *s < 97)
+            return false;
+        s++;
+        len++;
+    }
+
+    return MIN_LETTERS <= len && len <= MAX_LETTERS;
+}
+
 int
 main()
 {
@@ -39,8 +54,7 @@ main()
 
     while (fgets(line, sizeof line, words) != NULL) {
         strtok(line, "\n");
-        size_t len = strlen(line);
-        if (MIN_LETTERS <= len && len <= MAX_LETTERS && rand() % ++count == 0)
+        if (is_lowercase_ascii(line) && rand() % ++count == 0)
             strcpy(word, line);
     }
 

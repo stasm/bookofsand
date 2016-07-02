@@ -12,6 +12,7 @@
 #endif
 
 #include "game.h"
+#include "log.h"
 #include "render.h"
 
 #define ALPHA_0   L" "
@@ -39,8 +40,10 @@ render_init(struct render_ui *ui)
     initscr();
 
     ui->map = newwin(SIZEY, SIZEX, 0, 1);
-    ui->status = newwin(1, SIZEX, SIZEY + 1, 1);
-    ui->log = newwin(3, SIZEX, SIZEY + 2, 1);
+    ui->status = newwin(3, 18, SIZEY + 1, 1);
+    ui->log = newwin(3, 60, SIZEY + 1, 20);
+
+    scrollok(ui->log, TRUE);
 
     cbreak();
     noecho();
@@ -235,6 +238,9 @@ void
 render_letter(struct game_state *game, WINDOW *win, struct letter *letter)
 {
     if (is_visible(game, letter->pos)) {
+        if (!letter->known)
+            game_learn_letter(game, letter);
+
         wchar_t val[1];
         cchar_t pic;
         mbstowcs(val, &letter->val, 1);
@@ -285,13 +291,26 @@ render_status(struct game_state *game, WINDOW *win)
 }
 
 void
+render_log(struct game_state *game, WINDOW *win)
+{
+    struct message *msg = game->log.head;
+
+    while (msg != NULL) {
+        wprintw(win, msg->text);
+        msg = msg->next;
+    }
+
+    wmove(win, 0, 0);
+    wnoutrefresh(win);
+}
+
+void
 render(struct game_state *game, struct render_ui *ui)
 {
-    clear();
-
     wnoutrefresh(stdscr);
     render_map(game, ui->map);
     render_status(game, ui->status);
+    render_log(game, ui->log);
 
     doupdate();
 }

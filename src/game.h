@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include "dungeon.h"
 #include "input.h"
+#include "log.h"
 
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 #define min(a,b) (((a) < (b)) ? (a) : (b))
@@ -16,6 +17,7 @@ struct letter {
     char             val;
     struct grid_pos  pos;
     bool             captured;
+    bool             known;
 };
 
 struct player {
@@ -35,8 +37,11 @@ struct game_state {
     struct letter    *letters;
     enum grid_tile    map[SIZEY][SIZEX];
     bool              seen[SIZEY][SIZEX];
+    struct log        log;
     int               cheats;
 };
+
+void game_learn_letter(struct game_state *, struct letter *);
 
 void game_process(struct game_state *, struct input_state *);
 

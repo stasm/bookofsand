@@ -1,8 +1,10 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include "game.h"
 #include "input.h"
+#include "log.h"
 
 bool
 equals(struct grid_pos a, struct grid_pos b)
@@ -84,6 +86,15 @@ move_player(struct game_state *game, enum input_dir dir)
 }
 
 void
+game_learn_letter(struct game_state *game, struct letter *letter)
+{
+    letter->known = true;
+    char text[MAX_MESSAGE_LEN];
+    sprintf(text, "\nYou see a letter %c. ", letter->val);
+    append_message(&game->log, text);
+}
+
+void
 game_process(struct game_state *game, struct input_state *input)
 {
     input_get(input);
@@ -114,8 +125,17 @@ game_init(struct game_state *game, char *magic_word)
     if (game->letters != NULL)
         for (size_t i = 0; i < game->num_letters; i++)
             game->letters[i] = (struct letter) {
-                game->magic_word[i], dungeon_rand_pos(game), false
+                .val = game->magic_word[i],
+                .pos = dungeon_rand_pos(game),
+                .captured = false,
+                .known = false,
             };
 
+    struct message *msg = create_message(NULL,
+            "You leaf through the pages of The Book to find a new word.");
+    game->log = (struct log) {
+        .head = msg,
+        .last = msg,
+    };
     game->cheats = CHEAT_NONE;
 }

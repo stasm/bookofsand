@@ -23,6 +23,7 @@ struct letter {
 
 struct player {
     struct grid_pos  pos;
+    int              strength;
 };
 
 enum cheat_code {

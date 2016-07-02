@@ -6,15 +6,34 @@
 #include "input.h"
 #include "log.h"
 
-char messages[][60] = {
-    "\nThere's a tiny %c here. You'll capture it with ease.",
-    "\nYou see an unassuming %c. It's no match for you.",
-    "\nA menacing %c comes into view. Stay away from it for now.",
-    "\nYou see a looming %c. It will be a hard fight.",
-    "\nThere is a fearless %c here. You reconsider.",
-    "\nA rather dangerous %c appears. You tremble.",
-    "\nYou see a huge %c. Perhaps some other time?",
-    "\nA humongous %c comes into view. It looks very scary.",
+char descriptions[][60] = {
+    "\nThere's a tiny %c here. %s",
+    "\nYou see an unassuming %c. %s",
+    "\nThere's a small %c here. %s",
+    "\nA menacing %c comes into view. %s",
+    "\nYou see a looming %c. %s",
+    "\nThere is a fearless %c here. %s",
+    "\nA medium-sized %c comes into view. %s",
+    "\nYou see a looming %c. %s",
+    "\nA rather dangerous %c appears. %s",
+    "\nYou see a huge %c. %s",
+    "\nA gigantic %c comes into view. %s",
+    "\nA humongous %c comes into view. %s",
+};
+
+char feelings[][60] = {
+    "You'll capture it with ease.",
+    "You have nothing to fear.",
+    "It's no match for you.",
+    "It will be an easy fight.",
+    "You reconsider.",
+    "It will be a hard fight.",
+    "It looks tough.",
+    "Stay away from it for now.",
+    "Perhaps some other time?",
+    "It looks very scary.",
+    "You tremble.",
+    "It will kill you.",
 };
 
 bool
@@ -34,8 +53,9 @@ get_letter(struct game_state *game, struct grid_pos p)
 }
 
 void
-capture_letter(struct letter *letter)
+capture_letter(struct game_state *game, struct letter *letter)
 {
+    game->player.strength++;
     letter->captured = true;
 }
 
@@ -90,11 +110,25 @@ move_player(struct game_state *game, enum input_dir dir)
     struct letter *letter = get_letter(game, new_pos);
 
     if (letter != NULL)
-        capture_letter(letter);
+        capture_letter(game, letter);
 
     if (is_passable(game, &new_pos))
         game->player.pos = new_pos;
 }
+
+static int
+map_number(int n, int from_min, int from_max, int to_min, int to_max)
+{
+    return (to_max - to_min) * (n - from_min) / (from_max - from_min) + to_min;
+}
+
+static int
+get_strength_diff(struct game_state *game, int player, int letter)
+{
+    return map_number(letter - player, -game->num_letters, game->num_letters,
+            0, 11);
+}
+
 
 void
 game_learn_letter(struct game_state *game, struct letter *letter)
@@ -104,7 +138,9 @@ game_learn_letter(struct game_state *game, struct letter *letter)
             game->letters[i].known = true;
 
     char text[MAX_MESSAGE_LEN];
-    sprintf(text, messages[letter->strength], letter->val);
+    int diff = get_strength_diff(game, game->player.strength,
+            letter->strength);
+    sprintf(text, descriptions[letter->strength], letter->val, feelings[diff]);
     append_message(&game->log, text);
 }
 

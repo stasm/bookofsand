@@ -6,14 +6,14 @@
 #include "input.h"
 #include "log.h"
 
-char descriptions[][60] = {
+char descriptions[][35] = {
     "\nThere's a tiny %c here. %s",
     "\nYou see an unassuming %c. %s",
     "\nThere's a small %c here. %s",
     "\nA menacing %c comes into view. %s",
     "\nYou see a looming %c. %s",
     "\nThere is a fearless %c here. %s",
-    "\nA medium-sized %c comes into view. %s",
+    "\nA medium %c comes into view. %s",
     "\nYou see a looming %c. %s",
     "\nA rather dangerous %c appears. %s",
     "\nYou see a huge %c. %s",
@@ -21,15 +21,15 @@ char descriptions[][60] = {
     "\nA humongous %c comes into view. %s",
 };
 
-char feelings[][60] = {
-    "You'll capture it with ease.",
+char feelings[][25] = {
     "You have nothing to fear.",
+    "It's harmless.",
     "It's no match for you.",
     "It will be an easy fight.",
     "You reconsider.",
     "It will be a hard fight.",
     "It looks tough.",
-    "Stay away from it for now.",
+    "Stay away from it.",
     "Perhaps some other time?",
     "It looks very scary.",
     "You tremble.",
